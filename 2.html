@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>평생교육론 6강·7강 랜덤 퀴즈</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  :root {
+    --bg: #FAF7F2; --ink: #1A1A1A; --muted: #6B6B6B; --card: #FFFFFF;
+    --border: #E8E2D5; --accent: #2E5C4F; --accent-soft: #E8F0EC;
+    --correct: #16A34A; --correct-soft: #DCFCE7; --correct-strong: #15803D;
+    --wrong: #DC2626; --wrong-soft: #FEE2E2; --wrong-strong: #B91C1C;
+    --shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.04);
+  }
+  html, body { background: var(--bg); color: var(--ink); font-family: 'IBM Plex Sans KR', sans-serif; -webkit-font-smoothing: antialiased; min-height: 100vh; overscroll-behavior-y: contain; }
+  body { background-image: radial-gradient(circle at 10% 0%, rgba(46,92,79,0.04) 0%, transparent 40%), radial-gradient(circle at 90% 100%, rgba(220,38,38,0.03) 0%, transparent 40%); }
+  .app { max-width: 560px; margin: 0 auto; padding: 24px 20px 40px; }
+  header { margin-bottom: 24px; }
+  .eyebrow { font-family: 'Gowun Dodum', serif; color: var(--accent); font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 6px; }
+  h1 { font-family: 'Gowun Dodum', serif; font-size: 24px; font-weight: 400; line-height: 1.3; margin-bottom: 8px; }
+  .subtitle { color: var(--muted); font-size: 14px; }
+  .progress-wrap { margin-top: 20px; display: flex; align-items: center; gap: 12px; }
+  .progress-bar { flex: 1; height: 6px; background: var(--border); border-radius: 999px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--accent); border-radius: 999px; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); width: 0%; }
+  .progress-text { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; min-width: 56px; text-align: right; }
+  .score-tracker { display: flex; gap: 8px; margin-top: 12px; font-size: 12px; color: var(--muted); }
+  .score-pill { padding: 4px 10px; border-radius: 999px; background: var(--card); border: 1px solid var(--border); font-weight: 600; }
+  .score-pill.correct-pill { color: var(--correct-strong); border-color: var(--correct); }
+  .score-pill.wrong-pill { color: var(--wrong-strong); border-color: var(--wrong); }
+  .feedback-banner { margin-bottom: 16px; padding: 14px 18px; border-radius: 12px; font-weight: 700; font-size: 16px; text-align: center; animation: slideIn 0.3s ease-out; letter-spacing: 0.02em; }
+  @keyframes slideIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+  .feedback-banner.correct { background: var(--correct); color: white; }
+  .feedback-banner.wrong { background: var(--wrong); color: white; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 24px 20px; box-shadow: var(--shadow); animation: fadeIn 0.35s ease-out; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .q-num { font-family: 'Gowun Dodum', serif; color: var(--accent); font-size: 13px; letter-spacing: 0.05em; margin-bottom: 12px; }
+  .question { font-size: 16px; font-weight: 500; line-height: 1.55; margin-bottom: 20px; word-break: keep-all; }
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .option { display: flex; align-items: flex-start; gap: 12px; padding: 14px 16px; background: var(--bg); border: 1.5px solid var(--border); border-radius: 12px; cursor: pointer; font-family: inherit; font-size: 14.5px; line-height: 1.5; text-align: left; width: 100%; color: var(--ink); transition: all 0.15s ease; word-break: keep-all; position: relative; }
+  .option:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-soft); }
+  .option:active:not(:disabled) { transform: scale(0.99); }
+  .option:disabled { cursor: default; }
+  .option-label { flex-shrink: 0; width: 24px; height: 24px; border-radius: 50%; background: var(--card); border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: var(--muted); transition: all 0.15s ease; }
+  .option-text { flex: 1; }
+  .option.correct { background: var(--correct-soft); border-color: var(--correct); border-width: 2.5px; color: var(--correct-strong); font-weight: 600; }
+  .option.correct .option-label { background: var(--correct); border-color: var(--correct); color: white; }
+  .option.correct .option-text { padding-right: 56px; }
+  .option.correct::after { content: '✓ 정답'; position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: var(--correct); color: white; font-size: 11px; font-weight: 700; padding: 4px 9px; border-radius: 6px; letter-spacing: 0.02em; }
+  .option.wrong { background: var(--wrong-soft); border-color: var(--wrong); border-width: 2.5px; color: var(--wrong-strong); font-weight: 600; }
+  .option.wrong .option-label { background: var(--wrong); border-color: var(--wrong); color: white; }
+  .option.wrong .option-text { padding-right: 56px; }
+  .option.wrong::after { content: '✗ 오답'; position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: var(--wrong); color: white; font-size: 11px; font-weight: 700; padding: 4px 9px; border-radius: 6px; letter-spacing: 0.02em; }
+  .explanation { margin-top: 16px; padding: 14px 16px; background: var(--accent-soft); border-left: 3px solid var(--accent); border-radius: 8px; font-size: 13.5px; line-height: 1.6; color: var(--ink); animation: fadeIn 0.3s ease-out; }
+  .explanation strong { color: var(--accent); display: block; margin-bottom: 4px; font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase; }
+  .controls { margin-top: 20px; display: flex; gap: 10px; }
+  .btn { flex: 1; padding: 14px 20px; border: none; border-radius: 12px; font-family: inherit; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.15s ease; }
+  .btn-primary { background: var(--ink); color: white; }
+  .btn-primary:hover { background: #000; }
+  .btn-primary:active { transform: scale(0.98); }
+  .btn-secondary { background: transparent; color: var(--muted); border: 1.5px solid var(--border); }
+  .btn-secondary:hover { border-color: var(--ink); color: var(--ink); }
+  .start-screen { text-align: center; padding: 40px 20px; }
+  .start-screen h2 { font-family: 'Gowun Dodum', serif; font-weight: 400; font-size: 22px; margin-bottom: 12px; }
+  .start-screen p { color: var(--muted); font-size: 14px; line-height: 1.6; margin-bottom: 24px; }
+  .start-info { background: var(--accent-soft); border-radius: 12px; padding: 16px; margin-bottom: 20px; font-size: 13.5px; line-height: 1.6; color: var(--ink); text-align: left; }
+  .start-info strong { color: var(--accent); }
+  .result { text-align: center; padding: 32px 20px; }
+  .result-score { font-family: 'Gowun Dodum', serif; font-size: 64px; font-weight: 400; color: var(--accent); line-height: 1; margin-bottom: 8px; }
+  .result-score span { font-size: 32px; color: var(--muted); }
+  .result-text { font-size: 16px; color: var(--muted); margin-bottom: 16px; }
+  .result-stats { display: flex; justify-content: center; gap: 24px; margin-bottom: 28px; padding: 16px; background: var(--bg); border-radius: 12px; border: 1px solid var(--border); }
+  .result-stat { text-align: center; }
+  .result-stat-num { font-family: 'Gowun Dodum', serif; font-size: 32px; font-weight: 400; line-height: 1; margin-bottom: 4px; }
+  .result-stat-num.correct-num { color: var(--correct-strong); }
+  .result-stat-num.wrong-num { color: var(--wrong-strong); }
+  .result-stat-label { font-size: 12px; color: var(--muted); letter-spacing: 0.05em; }
+  .review { text-align: left; margin-top: 24px; border-top: 1px solid var(--border); padding-top: 20px; }
+  .review h2 { font-family: 'Gowun Dodum', serif; font-weight: 400; font-size: 18px; margin-bottom: 12px; }
+  .review-item { padding: 12px 14px; border-radius: 10px; margin-bottom: 8px; font-size: 13.5px; line-height: 1.5; background: var(--bg); border: 1px solid var(--border); border-left: 3px solid var(--wrong); }
+  .review-item .rq { font-weight: 500; margin-bottom: 4px; }
+  .review-item .ra { color: var(--muted); font-size: 13px; }
+  footer { text-align: center; margin-top: 32px; font-size: 12px; color: var(--muted); font-family: 'Gowun Dodum', serif; }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="eyebrow">평생교육론</div>
+    <h1 id="title">6강·7강 랜덤 퀴즈</h1>
+    <div class="subtitle" id="subtitle">전체 98문제 중 무작위 15문제 출제</div>
+    <div class="progress-wrap" id="progressWrap" style="display:none;">
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-text" id="progressText">0 / 15</div>
+    </div>
+    <div class="score-tracker" id="scoreTracker" style="display:none;">
+      <div class="score-pill correct-pill">✓ <span id="correctCount">0</span></div>
+      <div class="score-pill wrong-pill">✗ <span id="wrongCount">0</span></div>
+    </div>
+  </header>
+  <main id="main"></main>
+  <footer>made with ripo · 학습 퀴즈</footer>
+</div>
+
+<script>
+const ALL_QUESTIONS = [{"q": "우리나라 평생교육 개념의 형성에 대한 설명으로 가장 적절한 것은?", "options": ["1980년 헌법 개정과 함께 갑자기 등장한 개념이다", "구한말 이후 사회교육이 발전·이어져 온 개념으로 이해해야 한다", "일본의 사회교육법을 그대로 수용한 개념이다", "미국의 평생학습 사상에서 직수입된 개념이다"], "answer": 1, "explanation": "우리나라 평생교육 개념은 갑자기 생겨난 것이 아니라, 구한말 이후 사회교육이 발전·이어져 온 개념으로 이해해야 합니다."}, {"q": "구한말 사회교육 사상가들에 대한 평가로 옳은 것은?", "options": ["평생교육이라는 용어를 직접 사용하며 평생학습 체계를 정립했다", "평생교육 용어를 쓰지 않았지만 사회교육과 평생교육의 관계를 유기적으로 잘 정립했다", "독립운동에 집중하느라 교육 문제에는 관심이 적었다는 평가를 받는다", "서구식 학교교육에만 의존하는 입장을 끝까지 견지하였다고 평가된다"], "answer": 1, "explanation": "구한말 사회교육 사상가들은 평생교육이라는 용어를 쓰지는 않았지만, 사회교육과 평생교육의 관계를 유기적으로 잘 정립했다고 평가됩니다."}, {"q": "오혁진 교수가 정리한 구한말 사회교육 사상의 3가지 원리에 해당하지 않는 것은?", "options": ["평민 지향적", "공동체 지향적", "사회변화 지향적", "엘리트 지향적"], "answer": 3, "explanation": "구한말 사회교육 사상의 3원리는 ①평민 지향적 ②공동체 지향적 ③사회변화 지향적입니다. 엘리트 지향은 해당하지 않습니다."}, {"q": "오혁진 교수의 구한말 사회교육 사상 정리가 발표된 저서의 출간 시기와 소속 대학으로 옳은 것은?", "options": ["서울대, 2010년", "동의대, 2016년", "고려대, 2018년", "부산대, 2020년"], "answer": 1, "explanation": "오혁진 교수는 동의대 소속이며, 2016년 저서에서 구한말 사회교육 사상의 3원리를 정리하였습니다."}, {"q": "구한말 사회교육 사상가에 해당하는 인물로 옳게 짝지어진 것은?", "options": ["이황 · 이이", "안창호 · 남강 이승훈", "정약용 · 박지원", "김구 · 윤봉길"], "answer": 1, "explanation": "대표 인물은 안창호, 남강 이승훈 등이며, 단순한 독립운동가가 아니라 진정한 교육자로서 학습자 존중과 교육의 평등 가치를 강조하였습니다."}, {"q": "한국 사회교육사 시대 구분 중 가장 긴 기간을 차지하는 시기는?", "options": ["원형적 생활 중심 사회교육 시기", "소외계층 중심 / 학교교육 보충형 사회교육 시기", "시민사회 형성기", "현대적 생활 중심 사회교육 시기"], "answer": 0, "explanation": "원형적 생활 중심 사회교육 시기는 고대~개화기 이전, 학교교육 본격화 이전의 가장 긴 기간을 차지합니다."}, {"q": "한국 사회교육사 시대 구분에서 '구한말 개화기~일제강점기~국가재건기~경제발전·민주화 운동기(80년대까지)'에 해당하는 시기는?", "options": ["원형적 생활 중심 사회교육 시기", "소외계층 중심 / 학교교육 보충형 사회교육 시기", "시민사회 형성기", "현대적 생활 중심 사회교육 시기"], "answer": 1, "explanation": "구한말 개화기부터 80년대까지는 '소외계층 중심 / 학교교육 보충형 사회교육 시기'에 해당합니다."}, {"q": "한국 사회교육사에서 '시민사회 형성기(고등교육 보완형)'에 해당하는 시기는?", "options": ["고대~개화기 이전", "구한말~80년대", "80년대 후반~90년대", "2000년 이후~현재"], "answer": 2, "explanation": "시민사회 형성기(고등교육 보완형)는 80년대 후반~90년대입니다."}, {"q": "'현대적 생활 중심 사회교육 시기(복지·세계화 병행)'에 해당하는 시기는?", "options": ["고대~개화기 이전", "구한말~80년대", "80년대 후반~90년대", "2000년 21세기 이후~현재"], "answer": 3, "explanation": "현대적 생활 중심 사회교육 시기(복지·세계화 병행)는 2000년 21세기 이후부터 현재까지입니다."}, {"q": "한국 사회교육사 시대 구분의 핵심 통찰로 가장 적절한 것은?", "options": ["사회교육은 어느 시기에나 학교교육과 동등한 위상을 가져왔다", "학교교육이 보편화될수록 소외감·박탈감을 느낀 사람들을 위한 교육이 사회교육의 주된 역할이 된 시기가 있다", "사회교육은 시기마다 동일한 형태와 내용으로 일관되게 유지되어 왔다", "사회교육은 시기를 막론하고 엘리트 계층 중심으로 운영되어 왔다"], "answer": 1, "explanation": "학교교육이 보편화될수록 학교에 못 다니는 사람들의 소외감·박탈감이 커지고, 이들을 위한 교육이 사회교육의 주된 역할이 되었던 시기가 있다는 점이 핵심입니다."}, {"q": "일본의 사회교육법 제정 시기와 관련 시설로 옳은 것은?", "options": ["1945년, 도서관 중심", "1949년, 공민관(국민관) 중심", "1955년, 학교 부설 시설 중심", "1960년, 평생학습관 중심"], "answer": 1, "explanation": "일본은 패망 직후인 1949년에 사회교육법을 제정하였고, 공민관(국민관) 기반으로 현재까지 운영하며 일본 평생학습에 크게 기여하고 있습니다."}, {"q": "한국이 일본보다 사회교육법 제정이 한참 늦어진 가장 큰 이유는?", "options": ["사회교육에 대한 학문적 관심과 연구가 부족했기 때문이다", "일본에서 도입돼 악용된 역사 때문에 사회교육에 부정적 인식을 갖게 되었기 때문", "입법에 필요한 예산이 절대적으로 부족하여 미루어진 것이다", "학교교육 중심의 정책 기조가 너무 강력했기 때문이다"], "answer": 1, "explanation": "한국은 일본에서 도입돼 악용된 역사 때문에 사회교육에 부정적 인식을 갖게 되었고, 그래서 정작 법 제정이 한참 늦어지는 아이러니를 보였습니다."}, {"q": "한국에서 사회교육법안을 만들려는 노력에 대한 설명으로 옳은 것은?", "options": ["1949년 국회에 시도하였으나 결국 제정되지는 못했다", "1949년 국회에서 만장일치로 통과되었다", "한국전쟁이 끝난 이후에야 시도되었다", "1980년 헌법 개정과 동시에 제정되었다"], "answer": 0, "explanation": "한국도 1949년 국회에 사회교육법안을 만들려는 노력이 있었고, 한국전쟁 중에도 시도되었지만, 결국 제정되지는 못했습니다."}, {"q": "헌법에 평생교육 조항이 삽입된 시기와 조항으로 옳은 것은?", "options": ["1972년 헌법 제29조", "1980년 헌법 제31조", "1987년 헌법 제32조", "1991년 헌법 제33조"], "answer": 1, "explanation": "1980년 헌법 제31조에 평생교육 조항이 삽입되었으며, 이는 제5공화국 출범 와중에 이루어졌습니다."}, {"q": "1980년 헌법에 평생교육 조항이 삽입된 배경에 대한 설명으로 적절한 것은?", "options": ["당시 정권이 평생교육의 중요성을 정확하게 인식하고 의도적으로 삽입한 것이었다", "국가보위비상대책상임위원회가 '참신해 보여서 얼떨결에 들어갔다'는 증언이 있을 정도였다", "국민투표를 통해 평생교육 조항 삽입이 결정된 절차였다", "유네스코의 권고를 그대로 수용하여 헌법에 명시한 결과였다"], "answer": 1, "explanation": "당시 국가보위비상대책상임위원회가 평생교육에 대해 정확히 알고 있어서 넣은 게 아니라, '참신해 보여서 얼떨결에 들어갔다'는 증언이 있을 정도였습니다."}, {"q": "헌법에 평생교육 조항이 삽입되었음에도 정작 사회교육법은 언제 제정되었는가?", "options": ["1980년 헌법 개정과 동시", "1981년 6월", "1982년 12월", "1985년 3월"], "answer": 2, "explanation": "헌법에 들어갔음에도 법 자체는 1982년 12월에야 사회교육법으로 제정되었으며, 이는 평생교육에 대한 인식이 강하지 않았음을 보여줍니다."}, {"q": "1982년 사회교육법의 한계로 옳지 않은 것은?", "options": ["법 체계상 교육법과 같은 레벨이 될 수 없는 어색한 위계", "법 적용 범위가 지나치게 좁아 유명무실", "구체성·강제성 부족으로 구속력 약함", "지나치게 광범위한 적용으로 행정 부담 가중"], "answer": 3, "explanation": "사회교육법의 한계는 ①법 체계상 위계 문제 ②적용 범위가 지나치게 좁아 유명무실 ③구체성·강제성 부족 ④돌발적·우연적 입법 등입니다. 광범위한 적용은 한계가 아닙니다."}, {"q": "1982년 사회교육법의 법 체계상 문제점에 대한 설명으로 옳은 것은?", "options": ["헌법보다 상위에 위치하게 되어 위헌 소지가 있다는 비판을 받았다", "헌법 아래 '교육법'이 있고 그 옆에 사회교육법이 있어 같은 레벨이 될 수 없는 어색한 위계였다", "다른 법령과 완전히 분리되어 독립적인 위치를 차지하고 있었다", "법률이 아닌 지방자치단체 조례 수준으로만 운영되는 한계가 있었다"], "answer": 1, "explanation": "헌법 아래 '교육법'이 있고, 그 옆에 사회교육법이 있어 위계가 어색했습니다. 사회교육법은 교육법과 같은 레벨이 될 수 없는 한계가 있었습니다."}, {"q": "사회교육법이 평생교육법으로 전부 개정된 시점은?", "options": ["1995년 5월 31일", "1999년 8월 31일", "2002년 1월 14일", "2007년 12월 14일"], "answer": 1, "explanation": "사회교육법은 1999년 8월 31일에 전부 개정되어 평생교육법이 탄생하였습니다."}, {"q": "평생교육법으로의 개정 노력이 가시화된 계기는?", "options": ["1980년대 초 국가보위비상대책위원회의 결정으로 시작되었다", "1990년대 중반 교육개혁위원회를 통한 개정 노력으로 가시화되었다", "2000년대 초 유네스코 권고를 수용하면서 본격화되었다", "2010년대 OECD 평가 결과를 반영하면서 개정 작업이 시작되었다"], "answer": 1, "explanation": "1990년대 중반 교육개혁위원회를 통해 평생교육법으로의 개정 노력이 가시화되었습니다."}, {"q": "평생교육법 제정 초기 안으로 검토된 법체계 구상은?", "options": ["사회교육법을 모법으로 하고 그 아래 다른 교육법을 배치하는 구조", "평생교육진흥법을 모법으로 하고 그 아래 유아·초중등·고등·사회교육법을 병행 배치", "교육기본법과 평생교육법을 완전히 분리하여 독립시키는 구조", "헌법 직속의 단일 평생교육법체계를 새로 구축하는 구조"], "answer": 1, "explanation": "초기 안은 평생교육진흥법을 모법으로 하고 그 아래 유아교육법·초중등교육법·고등교육법·사회교육법을 병행 배치하려 했으나, 교육기본법이 먼저 제정되면서 다른 방향으로 흘러갔습니다."}, {"q": "사회교육법이 평생교육법으로 전환된 두 가지 관점에 해당하는 것은?", "options": ["보수적 관점 + 진보적 관점", "배제적 관점 + 확장적 관점", "법률적 관점 + 행정적 관점", "중앙적 관점 + 지방적 관점"], "answer": 1, "explanation": "사회교육법이 평생교육법으로 전환된 두 가지 관점은 ①배제적 관점 ②확장적 관점이며, 두 관점이 동시에 작용했습니다."}, {"q": "'배제적 관점'에 대한 설명으로 가장 적절한 것은?", "options": ["지식기반사회 도래에 따라 평생학습을 진흥하려는 시대적 흐름", "일제강점기 사회교육이 악용된 역사 때문에 '사회교육' 용어 자체를 배제하려는 흐름", "사회교육 영역을 학교교육으로부터 완전히 분리하려는 흐름", "국가가 사회교육 영역에서 점진적으로 손을 떼려는 정책적 흐름"], "answer": 1, "explanation": "배제적 관점은 일제강점기 사회교육이 악용된 역사 때문에 '사회교육'이라는 용어 자체를 배제하려는 흐름입니다."}, {"q": "'확장적 관점'에 대한 설명으로 가장 적절한 것은?", "options": ["일제강점기 악용 역사 때문에 사회교육 용어를 배제하려는 흐름", "지식기반사회 도래에 따라 평생학습을 진흥하려는 흐름", "사회교육의 영역을 학교교육 중심으로 축소하려는 흐름", "사회교육을 학교교육 중심 체제로 통합하려는 흐름"], "answer": 1, "explanation": "확장적 관점은 지식기반사회 도래에 따라 평생학습을 진흥하려는 흐름입니다."}, {"q": "사회교육법이 평생교육법으로 전환된 후 발생한 혼란에 대한 설명으로 옳은 것은?", "options": ["새 평생교육법의 평생교육이 학교교육까지 모두 포괄하게 되어 범위가 확대되었다", "새 평생교육법의 '평생교육'이 과거 사회교육법의 '사회교육'과 적용 범위가 똑같아졌다", "평생교육법이 결국 폐지되고 다시 사회교육법으로 환원되는 결과가 나타났다", "평생교육과 사회교육이 단일 용어로 완전히 통합되어 혼란이 해소되었다"], "answer": 1, "explanation": "새 평생교육법의 '평생교육'은 과거 사회교육법의 '사회교육'과 적용 범위가 똑같아져 혼란이 발생하였고, 넓은/좁은 의미의 평생교육 구분이 불가피해졌습니다."}, {"q": "교육기본법과 평생교육법의 '평생교육' 개념 차이에 대한 설명으로 옳은 것은?", "options": ["교육기본법은 학교교육만 다루고 / 평생교육법은 사회교육만 다룬다", "교육기본법: 학교교육 + 사회교육(넓은 의미) / 평생교육법: 학교교육 제외(= 사실상 사회교육)", "교육기본법은 사회교육만 다루고 / 평생교육법은 학교교육+사회교육을 다룬다", "두 법 모두 동일하게 학교교육과 사회교육을 함께 다룬다"], "answer": 1, "explanation": "교육기본법에서 평생교육은 학교교육 + 사회교육(넓은 의미)이고, 평생교육법에서 평생교육은 학교교육을 제외한 것(= 사실상 사회교육)입니다."}, {"q": "평생교육법에서 '사회교육' 용어 사용에 대한 설명으로 옳은 것은?", "options": ["사회교육이라는 용어가 매우 자주 등장한다", "평생교육법에는 정작 '사회교육'이라는 용어가 하나도 없다", "사회교육과 평생교육이 혼용되어 사용된다", "사회교육은 부칙에만 등장한다"], "answer": 1, "explanation": "평생교육법은 사실상 사회교육을 다루지만, 정작 평생교육법 안에는 '사회교육'이라는 용어가 하나도 없습니다."}, {"q": "법령 명칭이 '평생학습법'이 아니라 '평생교육법'이 된 이유는?", "options": ["'학습'보다 '교육'이 더 광범위한 개념이라고 판단했기 때문", "다른 법(교육기본법, 초중등교육법, 고등교육법)과의 일관성 때문", "국제기구가 '평생교육법' 명칭 사용을 권고했기 때문", "민간단체들이 '평생교육법'이라는 명칭을 요구했기 때문"], "answer": 1, "explanation": "명칭이 '평생학습법'이 아니라 '평생교육법'이 된 이유는 다른 법(교육기본법, 초중등교육법, 고등교육법)과의 일관성 때문입니다."}, {"q": "현행 평생교육 관련 법체계의 위계로 옳은 것은?", "options": ["헌법 → 평생교육법 → 교육기본법 → 초중등·고등교육법", "헌법 → 교육기본법 → 초중등교육법·고등교육법·평생교육법", "헌법 → 사회교육법 → 평생교육법 → 교육기본법", "헌법 → 초중등교육법 → 평생교육법 → 교육기본법"], "answer": 1, "explanation": "현행 법체계는 헌법 → 교육기본법 아래 초중등교육법·고등교육법·평생교육법이 병렬로 배치되어 있습니다."}, {"q": "이전 교육법이 사회교육법의 모법이 되기 어려웠던 한계의 이유는?", "options": ["이전 교육법이 거의 학교교육만 규율하였기 때문", "이전 교육법이 평생교육 전반을 다루었기 때문", "이전 교육법이 사회교육 전용 법이었기 때문", "이전 교육법이 지방자치 조례 수준이었기 때문"], "answer": 0, "explanation": "이전 교육법은 거의 학교교육을 규율하는 데 집중되어 있어 사회교육법의 모법이 되기 어려운 한계가 있었습니다."}, {"q": "평생교육법의 두 차례 전부 개정 시점으로 옳게 짝지어진 것은?", "options": ["1995년 5월 / 2005년 12월", "1999년 8월 31일 / 2007년 12월 14일", "2000년 1월 / 2010년 6월", "2003년 3월 / 2013년 9월"], "answer": 1, "explanation": "1차 전부 개정은 1999년 8월 31일(사회교육법 → 평생교육법), 2차 전부 개정은 2007년 12월 14일이며 추진체제·집행기구 정비가 핵심이었습니다."}, {"q": "2007년 12월 14일 평생교육법 전부 개정(2차)의 핵심 내용은?", "options": ["사회교육법 명칭 환원", "추진체제·집행기구 정비", "평생교육사 자격 폐지", "학력 인정 기관 전면 폐지"], "answer": 1, "explanation": "2007년 12월 14일 2차 전부 개정의 핵심은 추진체제·집행기구 정비입니다."}, {"q": "2019년 말까지 평생교육법의 일부 개정 횟수와 주요 분야는?", "options": ["총 5번 개정되었으며 학교교육 분야가 중심이었다", "총 8번 개정되었으며 고등교육 분야가 중심이었다", "총 11번, 문해교육·평생교육사·평생교육기관·장애인 평생교육 등", "총 15번 개정되었으며 직업교육 분야가 중심이었다"], "answer": 2, "explanation": "2019년 말까지 총 11번의 일부 개정이 있었으며, 문해교육·평생교육사·평생교육기관·장애인 평생교육 등이 주요 분야였습니다."}, {"q": "평생교육법상 평생교육의 정의로 옳은 것은?", "options": ["학교교육과 학교 밖 교육을 모두 포함하는 교육 활동", "학교의 정규 교육과정을 제외한 모든 형태의 조직적인 교육 활동", "성인을 대상으로 하는 모든 학습 활동", "공공기관이 운영하는 모든 교육 프로그램"], "answer": 1, "explanation": "평생교육법상 평생교육은 '학교의 정규 교육과정을 제외한 모든 형태의 조직적인 교육 활동'으로 정의됩니다."}, {"q": "평생교육법상 평생교육 정의의 한계로 가장 적절한 것은?", "options": ["학교 정규 교육과정까지 포함하여 범위가 너무 넓어졌다는 한계", "'조직적'(= 교육 프로그램으로 진행되는) 조건 때문에 비조직적·비프로그램적 교육 활동이 배제된다", "성인 학습자만을 대상으로 한정하여 범위가 너무 좁다는 한계", "온라인 교육 형태를 평생교육으로 인정하지 않는다는 한계"], "answer": 1, "explanation": "'조직적'이라는 표현이 '교육 프로그램으로 진행되는'을 의미하기 때문에, 비조직적·비프로그램적 교육 활동은 배제되는 한계가 있습니다."}, {"q": "평생교육진흥 기본계획의 수립 주체와 주기로 옳은 것은?", "options": ["교육부 장관, 3년마다", "교육부 장관, 5년마다", "국무총리, 5년마다", "대통령, 10년마다"], "answer": 1, "explanation": "교육부 장관이 5년마다 평생교육진흥 기본계획을 수립하고, 평생교육진흥위원회가 심의합니다."}, {"q": "평생교육진흥 기본계획을 심의하는 기구는?", "options": ["국가평생교육진흥원", "평생교육진흥위원회", "국무회의", "교육부 자문위원회"], "answer": 1, "explanation": "교육부 장관이 수립하는 평생교육진흥 기본계획은 평생교육진흥위원회가 심의합니다."}, {"q": "시·도 평생교육진흥 시행계획에 대한 설명으로 옳은 것은?", "options": ["교육부 장관이 5년마다 시행계획을 직접 수립한다", "각 시·도지사가 매년 수립하고 시·도 평생교육협의회가 심의한다", "국가평생교육진흥원이 시행계획을 직접 운영·관리한다", "각 시장·군수가 3년마다 시행계획을 수립한다"], "answer": 1, "explanation": "각 시·도지사는 매년 평생교육진흥 시행계획을 수립하고, 시·도 평생교육협의회가 이를 심의합니다."}, {"q": "중앙 단위의 평생교육 집행기구로 옳은 것은?", "options": ["국가평생교육진흥원 + 국가장애인평생교육진흥센터", "한국교육개발원 + 한국방송통신대학교", "교육부 + 평생교육협의회", "유네스코한국위원회 + 한국교육과정평가원"], "answer": 0, "explanation": "중앙 단위 집행기구는 국가평생교육진흥원과 국가장애인평생교육진흥센터입니다."}, {"q": "평생교육 집행기구를 단위별로 잘못 짝지은 것은?", "options": ["중앙 - 국가평생교육진흥원", "시·도 - 시·도 평생교육진흥원", "시·군·자치구 - 평생교육 관련 협의·논의 기구", "읍·면·동 - 국가장애인평생교육진흥센터"], "answer": 3, "explanation": "국가장애인평생교육진흥센터는 중앙 단위 기구입니다. 읍·면·동 단위는 평생학습센터 등이 해당합니다."}, {"q": "평생교육사에 대한 설명으로 옳은 것은?", "options": ["평생교육법상에 명시된 여러 국가자격 중 하나에 해당한다", "학교교육의 '교사'에 대응되는, 평생교육법상 유일한 국가자격이다", "국가공인이 아닌 민간자격으로 운영되는 자격이다", "지방자치단체 조례에 근거하여 운영되는 자격이다"], "answer": 1, "explanation": "평생교육사는 학교교육의 '교사'에 대응되는, 평생교육법상 유일한 국가자격입니다."}, {"q": "평생교육사 자격 관리 체계의 변화로 옳은 것은?", "options": ["이전엔 교육부 → 각 대학으로 분산화", "이전엔 각 대학 → 국가평생교육진흥원으로 일원화", "이전엔 국가평생교육진흥원 → 각 시·도교육청으로 이양", "이전엔 한국교육개발원 → 민간기관으로 위탁"], "answer": 1, "explanation": "평생교육사 자격 관리는 이전엔 각 대학에서 담당했으나, 국가평생교육진흥원으로 일원화되었습니다."}, {"q": "평생교육기관 구분의 기준은?", "options": ["설립 주체(공공/민간)", "운영 규모", "학력 인정 여부", "프로그램 분야"], "answer": 2, "explanation": "평생교육기관은 학력 인정 여부로 구분되며, 학력 인정 시 인가(엄격), 학력 미인정 시 등록·신고로 운영됩니다."}, {"q": "평생교육기관의 학력 인정 여부에 따른 절차로 옳은 것은?", "options": ["학력 인정 O → 등록·신고 / 학력 인정 X → 인가", "학력 인정 O → 인가 필요(엄격) / 학력 인정 X → 등록·신고", "둘 다 인가 필요", "둘 다 등록·신고로 가능"], "answer": 1, "explanation": "학력 인정 O는 국가 인정 사안이므로 인가가 필요(엄격)하며, 학력 인정 X는 등록·신고로 가능합니다."}, {"q": "평생교육기관의 유형에 해당하지 않는 것은?", "options": ["사내대학 형태", "원격대학 형태", "사업장 부설", "지방의회 부설"], "answer": 3, "explanation": "평생교육기관 유형은 ①학교 형태 ②사내대학 형태 ③원격대학 형태 ④사업장 부설 ⑤시민사회단체 부설 ⑥언론기관 부설 ⑦지식·인력개발 관련 기관입니다. 지방의회 부설은 해당하지 않습니다."}, {"q": "독학학위제의 원래 운영기관과 근거법으로 옳게 짝지어진 것은?", "options": ["한국교육개발원 / 학점인정 등에 관한 법률", "한국방송통신대학교 / 독학에 의한 학위 취득에 관한 법률", "국가평생교육진흥원 / 평생교육법", "한국과학기술원 / 고등교육법"], "answer": 1, "explanation": "독학학위제는 한국방송통신대학교가 운영했으며, 근거법은 '독학에 의한 학위 취득에 관한 법률'입니다."}, {"q": "학점은행제의 원래 운영기관과 근거법으로 옳게 짝지어진 것은?", "options": ["한국방송통신대학교 / 독학에 의한 학위 취득에 관한 법률", "한국교육개발원 / 학점인정 등에 관한 법률", "국가평생교육진흥원 / 평생교육법", "한국직업능력연구원 / 직업교육훈련촉진법"], "answer": 1, "explanation": "학점은행제는 한국교육개발원이 운영했으며, 근거법은 '학점인정 등에 관한 법률'입니다."}, {"q": "독학학위제와 학점은행제의 공통점으로 가장 적절한 것은?", "options": ["둘 다 정규 대학 졸업이 자격 취득의 필수 요건이다", "정규 대학에 입학하지 않고도 학위 취득이 가능한 대안적 경로이다", "둘 다 한국방송통신대학교가 현재 운영하는 학위 과정이다", "둘 다 직장인만 신청 가능한 재직자 전용 제도이다"], "answer": 1, "explanation": "두 제도의 공통점은 정규 대학에 입학하지 않고도 학위 취득이 가능한 대안적 경로라는 점입니다."}, {"q": "평생학습계좌제에 대한 설명으로 옳은 것은?", "options": ["초·중·고 학생의 학습이력을 관리하는 국가 차원의 시스템이다", "평생 동안 학습한 결과를 학습 계좌에 체계적으로 등록·관리하는 국가 차원의 학습이력관리 체제이다", "민간기업이 운영하는 학습 포인트 적립 및 관리 시스템이다", "대학생 학자금 대출과 상환을 관리하는 시스템이다"], "answer": 1, "explanation": "평생학습계좌제는 평생 동안 학습한 결과를 학습 계좌에 체계적으로 등록·관리하는 국가 차원의 학습이력관리 체제입니다."}, {"q": "초·중·고 학습이력 관리 시스템의 이름은?", "options": ["NEIS(나이스)", "EBS", "K-MOOC", "늘배움"], "answer": 0, "explanation": "초·중·고 학습이력 관리 시스템은 NEIS(나이스)입니다."}, {"q": "'늘배움' 포털에 대한 설명으로 옳지 않은 것은?", "options": ["국가평생교육진흥원 내 학습 포털이다", "'평생학습'의 우리말이 '늘배움'이다", "국민의 학습 관련 모든 정보를 담는 플랫폼이다", "한국교육개발원이 운영하는 학점은행 전용 포털이다"], "answer": 3, "explanation": "늘배움은 국가평생교육진흥원 내 학습 포털이며, 한국교육개발원의 학점은행 전용 포털이 아닙니다."}, {"q": "K-MOOC에 대한 설명으로 옳은 것은?", "options": ["대학만이 K-MOOC 강좌 개발에 참여할 수 있도록 제한되어 있다", "대학뿐 아니라 기업 부설 연구소, 직업능력개발훈련시설, 공익법인도 강좌 개발에 참여 가능하다", "초·중·고 학생만 K-MOOC 강좌를 수강할 수 있는 대상이다", "유료 강좌만 제공하며 무료 강좌는 운영하지 않는다"], "answer": 1, "explanation": "K-MOOC는 4차 산업혁명 흐름 속에서 최첨단 장비를 활용해 온라인 강좌를 제공하며, 대학뿐 아니라 기업 부설 연구소, 직업능력개발훈련시설, 공익법인도 강좌 개발에 참여할 수 있습니다."}, {"q": "'매치업(Match業)'에 대한 설명으로 옳은 것은?", "options": ["기업이 요구하는 최첨단 분야와 교육기관 역량을 결합한 단기 프로그램이다", "대학생들의 진로를 기업과 매칭해주는 취업 연계 서비스이다", "교사들 간의 전문성 교류를 위한 멘토링 프로그램이다", "해외 유학생을 국내 대학과 연결해주는 매칭 사업이다"], "answer": 0, "explanation": "매치업(Match業)은 기업이 요구하는 최첨단 분야와 교육기관 역량을 결합해 단기 프로그램을 개발하는 사업으로, 대기업+하청기업 직원 역량 향상이 목적이며 학점은행제·학습계좌와 연계 가능합니다."}, {"q": "평생학습도시 사업에 대한 설명으로 옳은 것은?", "options": ["행정안전부 지정으로 시·도가 자체적으로 평가하는 사업", "교육부 지정, 국가평생교육진흥원 수행, 2019년 시범 → 2020년부터 3년 주기 재평가", "기획재정부 지정으로 한국교육개발원이 수행하는 사업", "유네스코 지정으로 시·군이 자율적으로 운영하는 사업"], "answer": 1, "explanation": "평생학습도시는 교육부가 지정하고 국가평생교육진흥원이 수행하며, 2019년 시범에 이어 2020년부터 3년 주기로 재평가됩니다."}, {"q": "성인 문해능력 조사의 통계적 성격으로 옳은 것은?", "options": ["민간 여론조사 수준", "통계청 승인 국가승인통계", "교육부 내부 자료", "한국교육개발원 자체 추정치"], "answer": 1, "explanation": "성인 문해능력 조사는 통계청이 승인한 국가승인통계입니다."}, {"q": "평생교육 바우처 사업의 지원 대상으로 옳은 것은?", "options": ["전 국민 누구나 신청 가능한 보편 복지 사업", "기초생활수급자, 차상위계층, 기준 중위소득 65% 이하", "공무원 및 공공기관 종사자를 위한 사업", "대학생 및 대학원생을 대상으로 한 사업"], "answer": 1, "explanation": "평생교육 바우처 사업은 기초생활수급자, 차상위계층, 기준 중위소득 65% 이하를 대상으로 합니다."}, {"q": "평생교육 바우처 사업의 초기 지원 규모와 의의로 옳은 것은?", "options": ["연간 100만 원으로 시작, 모든 국민을 대상으로 한 보편적 평생학습 프로그램", "연간 35만 원 수준에서 시작, 우리나라 최초로 취약계층에 교육 참여 예산을 직접 지원한 프로그램", "연간 10만 원으로 시작, 학생 계층만을 한정 지원한 시범 프로그램", "연간 50만 원으로 시작, 노인 계층만을 한정 지원한 복지 프로그램"], "answer": 1, "explanation": "평생교육 바우처는 연간 35만 원 수준에서 시작되었으며, 우리나라 최초로 취약계층에 교육 참여 예산을 직접 지원한 프로그램입니다."}, {"q": "평생교육법 제4조에 명시된 평생교육의 이념은?", "options": ["모든 국민은 평등하게 직업교육을 받는다", "모든 국민은 평생교육의 기회를 균등하게 제공받는다", "국가는 학교교육을 우선적으로 지원한다", "지방자치단체는 평생교육에 자율적으로 참여한다"], "answer": 1, "explanation": "평생교육법 제4조는 평생교육의 이념으로 '모든 국민은 평생교육의 기회를 균등하게 제공받는다'고 규정합니다."}, {"q": "교육기본법과 평생교육법의 차이로 가장 적절한 것은?", "options": ["교육기본법은 평생교육이 상위 개념으로 학교교육+사회교육을 포함(열린 교육체제 지향), 평생교육법은 사회교육을 평생교육으로 그냥 대체", "두 법은 평생교육에 대해 완전히 동일한 개념과 범위를 다루고 있다", "교육기본법은 학교교육만 다루고, 평생교육법은 사회교육만 별도로 다룬다", "교육기본법이 폐지되어 현재는 평생교육법만 유효하게 적용되고 있다"], "answer": 0, "explanation": "교육기본법은 평생교육이 상위 개념으로 학교교육+사회교육을 포함하여 열린 교육체제를 지향하지만, 평생교육법은 사회교육을 평생교육으로 그냥 대체하여 혼선이 발생합니다."}, {"q": "'교육받을 권리'에서의 교육과 교육학 담론에서의 교육 개념을 옳게 구분한 것은?", "options": ["교육받을 권리에서의 교육 = 교수+학습 활동 / 교육학 담론에서의 교육 = 제도(학교교육)", "교육받을 권리 = 제도(주로 학교교육) / 교육학 담론 = 교수+학습 활동(학교 안팎 모두)", "두 맥락 모두에서 교육은 학교교육만을 의미한다고 본다", "두 맥락 모두에서 교육은 사회교육만을 의미한다고 본다"], "answer": 1, "explanation": "'교육받을 권리'에서의 교육은 제도(주로 학교교육)를 의미하고, 교육학 담론에서의 교육은 교수+학습 활동(학교 안팎 모두)을 의미합니다."}, {"q": "평생교육법의 향후 과제로 옳지 않은 것은?", "options": ["범정부 차원의 평생교육법 정비", "평생교육 통계 내실화", "문해교육 지원 강화", "교육부 단독 관할로의 완전 일원화"], "answer": 3, "explanation": "향후 과제는 범정부 차원 정비(현재 교육부 관할에 한정), 통계 내실화, 문해교육 지원 강화, 전 생애 통합 정책 등입니다. 교육부 단독 일원화는 오히려 한계로 지적되는 부분입니다."}, {"q": "현재 평생교육 통계를 담당하는 기관과 그 한계로 옳은 것은?", "options": ["국가평생교육진흥원 / 예산 부족", "한국교육개발원 / 사례 수 부족", "통계청 / 표본 추출 어려움", "교육부 / 인력 부족"], "answer": 1, "explanation": "현재 평생교육 통계는 한국교육개발원이 담당하나 사례 수 부족이라는 한계가 있어 내실화가 필요합니다."}, {"q": "다음 연도와 사건을 잘못 짝지은 것은?", "options": ["1949년 - 일본 사회교육법 제정", "1980년 - 헌법 제31조 평생교육 조항 삽입", "1982년 12월 - 사회교육법 제정", "2015년 - 평생교육법 1차 전부 개정"], "answer": 3, "explanation": "평생교육법 1차 전부 개정은 1999년 8월 31일이며, 2007년 12월 14일에 2차 전부 개정이 있었습니다."}, {"q": "다음 사건을 시간 순서대로 바르게 나열한 것은?", "options": ["헌법 평생교육 조항 삽입 → 사회교육법 제정 → 평생교육법 1차 전부 개정 → 평생교육법 2차 전부 개정", "사회교육법 제정 → 헌법 평생교육 조항 삽입 → 평생교육법 2차 전부 개정 → 평생교육법 1차 전부 개정", "평생교육법 1차 전부 개정 → 헌법 평생교육 조항 삽입 → 사회교육법 제정 → 평생교육법 2차 전부 개정", "사회교육법 제정 → 평생교육법 1차 전부 개정 → 헌법 평생교육 조항 삽입 → 평생교육법 2차 전부 개정"], "answer": 0, "explanation": "올바른 순서: 1980년 헌법 평생교육 조항 → 1982년 사회교육법 제정 → 1999년 평생교육법 1차 전부 개정 → 2007년 평생교육법 2차 전부 개정"}, {"q": "구한말 사회교육 사상가들이 가졌던 신념으로 가장 적절한 것은?", "options": ["엘리트 교육만이 사회를 변화시킬 수 있다는 보수적 신념", "'교육을 통해 사회 문제를 해결할 수 있다'는 낙관적 신념", "교육은 사회 변화와 직접적 관련이 없다는 회의적 신념", "서구식 교육만이 답이라는 외래 사상 수용적 신념"], "answer": 1, "explanation": "구한말 사회교육 사상가들은 '교육을 통해 사회 문제를 해결할 수 있다'는 낙관적 신념을 보유했습니다."}, {"q": "구한말 사회교육 사상가들의 역할에 대한 설명으로 옳은 것은?", "options": ["단순한 독립운동가에 머물러 교육적 역할은 부차적이었다", "진정한 교육자로서 학습자 존중과 교육의 평등 가치를 강조했다", "서구 교육 사상의 단순 수입자로서 한계가 분명했다는 평가", "왕실 교육과 양반 교육에만 주로 관여했다는 평가를 받는다"], "answer": 1, "explanation": "구한말 사상가들은 단순한 독립운동가가 아니라 진정한 교육자로서, 학습자 존중과 교육의 평등 가치를 강조하였습니다."}, {"q": "한국 사회교육사 시대 구분 중 '소외계층 중심 / 학교교육 보충형' 시기에 사회교육의 주된 역할은?", "options": ["엘리트 계층 대상의 고등교육을 강화하는 역할", "학교에 못 다니는 사람들의 소외감·박탈감을 보완", "유학생 파견을 위한 해외 유학 지원 역할", "산업 현장에 필요한 직업훈련 제공 역할"], "answer": 1, "explanation": "학교교육이 보편화될수록 학교에 못 다니는 사람들의 소외감·박탈감이 커지고, 이들을 위한 교육이 사회교육의 주된 역할이었습니다."}, {"q": "일본 공민관(국민관)의 역사적 의의로 옳은 것은?", "options": ["일제강점기 한국 교육 통제 수단", "일본 평생학습에 크게 기여한 사회교육 시설", "미국식 도서관 모델의 도입", "유엔이 설립한 국제 교육시설"], "answer": 1, "explanation": "일본 공민관(국민관)은 1949년 사회교육법 제정 이후 현재까지 운영되며 일본 평생학습에 크게 기여하고 있습니다."}, {"q": "1980년 헌법 제31조 평생교육 조항 삽입과 1982년 12월 사회교육법 제정의 시간 차이가 의미하는 바는?", "options": ["당시 평생교육에 대한 인식이 매우 강했음", "당시 평생교육에 대한 인식이 강하지 않았음을 보여줌", "법 제정이 신속하게 이루어졌음을 보여줌", "국제기구의 압력이 컸음을 보여줌"], "answer": 1, "explanation": "헌법에 들어갔음에도 법 자체는 1982년 12월에야 사회교육법으로 제정된 점은 평생교육에 대한 인식이 강하지 않았음을 보여줍니다."}, {"q": "1982년 사회교육법이 '돌발적·우연적'으로 만들어졌다는 평가가 의미하는 것은?", "options": ["충분한 사회적 합의와 준비를 거쳐 제정됨", "시대 흐름에 따라 체계적 준비 없이 만들어짐", "국민투표로 결정됨", "해외 사례를 충분히 검토함"], "answer": 1, "explanation": "사회교육법은 시대 흐름에 따라 돌발적·우연적으로 만들어졌다는 평가를 받습니다."}, {"q": "평생교육진흥법 초기 구상이 다른 방향으로 흘러간 결정적 이유는?", "options": ["국회의 강한 반대에 부딪혀 좌초되었기 때문", "교육기본법이 먼저 제정되었기 때문", "사업 추진에 필요한 예산이 부족했기 때문", "국제 협약이 우선 적용되어야 했기 때문"], "answer": 1, "explanation": "초기 안은 평생교육진흥법을 모법으로 하려 했으나, 교육기본법이 먼저 제정되면서 다른 방향으로 흘러갔습니다."}, {"q": "'넓은 의미의 평생교육'과 '좁은 의미의 평생교육' 구분이 불가피해진 이유는?", "options": ["국제 평생학습 표준에 맞추기 위해 구분되었기 때문", "새 평생교육법의 '평생교육'이 과거 사회교육법의 '사회교육'과 적용 범위가 똑같아졌기 때문", "민간단체들이 두 개념의 구분을 강하게 요구했기 때문", "대학들이 학문적 정밀성을 위해 구분을 요구했기 때문"], "answer": 1, "explanation": "새 평생교육법의 '평생교육' 적용 범위가 과거 '사회교육'과 같아져 혼란이 생기면서, 넓은/좁은 의미의 구분이 불가피해졌습니다."}, {"q": "평생교육법의 일부 개정에서 다루어진 분야로 옳지 않은 것은?", "options": ["문해교육", "평생교육사", "평생교육기관", "학교 정규 교육과정"], "answer": 3, "explanation": "평생교육법 일부 개정은 문해교육·평생교육사·평생교육기관·장애인 평생교육 등이 주요 분야였습니다. 학교 정규 교육과정은 평생교육법 적용 대상이 아닙니다."}, {"q": "평생교육법상 '조직적'이라는 표현이 의미하는 바는?", "options": ["행정 조직 내부의", "'교육 프로그램으로 진행되는'", "공공기관이 운영하는", "유료로 운영되는"], "answer": 1, "explanation": "평생교육법의 '조직적'은 '교육 프로그램으로 진행되는'을 의미하며, 이 때문에 비조직적·비프로그램적 교육 활동은 배제됩니다."}, {"q": "평생학습계좌제가 향후 통합할 가능성을 가진 영역은?", "options": ["오직 학교교육 이력", "타 부처 관할 교육이력", "오직 사설학원 이력", "오직 해외 유학 이력"], "answer": 1, "explanation": "평생학습계좌제는 향후 타 부처 관할 교육이력까지 통합할 가능성을 보유하고 있습니다."}, {"q": "K-MOOC가 활용하는 환경적 배경으로 가장 적절한 것은?", "options": ["코로나19 팬데믹 대응을 위한 비대면 교육 확대", "4차 산업혁명 흐름 속 최첨단 장비 활용", "해외 유학 수요 증가에 따른 대안 마련", "대학 정원 미달 사태에 대한 보완책 마련"], "answer": 1, "explanation": "K-MOOC는 4차 산업혁명 흐름 속에서 최첨단 장비를 활용해 온라인 강좌를 제공합니다."}, {"q": "매치업(Match業)의 주된 목적은?", "options": ["대학생 진로 상담", "대기업+하청기업 직원 역량 향상", "해외 인력 유치", "공무원 시험 대비"], "answer": 1, "explanation": "매치업은 기업이 요구하는 최첨단 분야와 교육기관 역량을 결합해, 대기업+하청기업 직원 역량 향상을 목적으로 합니다."}, {"q": "매치업이 연계 가능한 다른 제도로 옳게 짝지어진 것은?", "options": ["NEIS · K-MOOC", "학점은행제 · 학습계좌제", "평생학습도시 · 평생학습박람회", "문해교육 · 바우처"], "answer": 1, "explanation": "매치업은 학점은행제·학습계좌와 연계가 가능합니다."}, {"q": "평생학습박람회의 성격으로 가장 적절한 것은?", "options": ["국제기구가 주관하는 1회성 글로벌 평생학습 행사", "연례 개최되는 지역 학습 성과 공유의 축제", "민간 기업이 주관하는 평생학습 제품 박람회", "대학 입시 정보를 제공하는 진로 박람회"], "answer": 1, "explanation": "평생학습박람회는 연례 개최되는 지역 학습 성과 공유의 축제입니다."}, {"q": "평생학습대상의 운영 방식으로 옳은 것은?", "options": ["5년마다 1회 시상", "매년 심사 후 시상", "수시 시상", "민간단체 자율 시상"], "answer": 1, "explanation": "평생학습대상은 매년 심사 후 시상하며, 예를 들어 제17회 대상은 송도1동 주민자치센터가 수상했습니다."}, {"q": "문해(문예)교육 사업의 내용으로 옳지 않은 것은?", "options": ["문해 교과서 개발·무상 보급", "성인 문해교육 방송 제작·방영", "문해교육 기관 프로그램 운영 지원", "대학 학위 자동 부여"], "answer": 3, "explanation": "문해교육 사업은 교과서 개발·보급, 방송 제작, 기관 지원, 문해의 달 행사, 성인 문해능력 조사 등을 포함합니다. 대학 학위 자동 부여는 포함되지 않습니다."}, {"q": "평생교육법 향후 과제 중 '범정부 차원의 평생교육법 정비'가 필요한 이유는?", "options": ["행정 예산 절감과 효율적 운영을 위해 필요하다", "현재는 교육부 관할 범위만 다루며 도서관·법무부 교정교육 등 다른 부처 평생교육을 포괄하지 못하기 때문", "행정 효율화와 부처 통합을 위해 필요한 작업이다", "국제 표준에 맞추기 위한 입법 정비가 필요하기 때문이다"], "answer": 1, "explanation": "현재 평생교육법은 교육부 관할 범위만 다루어 도서관·법무부 교정교육 등 다른 부처의 평생교육을 포괄하지 못하는 한계가 있습니다."}, {"q": "문해교육 지원 강화를 위해 필요한 입법 조치로 옳은 것은?", "options": ["평생교육법을 폐지하고 새 법을 제정", "학력 제한 문제 해결을 위한 교육기본법 개정", "과거의 사회교육법을 다시 부활시키는 입법", "초중등교육법을 개정하여 문해교육을 포함"], "answer": 1, "explanation": "문해교육 지원 강화를 위해서는 학력 제한 문제 해결을 위한 교육기본법 개정이 필요합니다."}, {"q": "평생교육법상 '교육'과 교육학 담론의 '교육'이 다른 이유로 가장 적절한 것은?", "options": ["국제 협약과 권고의 영향을 받아 구분되었기 때문", "'교육받을 권리'에서의 교육은 제도(주로 학교교육)에 한정되지만, 교육학 담론에서의 교육은 학교 안팎의 교수+학습 활동 전체를 포괄하기 때문", "민간단체들이 두 맥락의 분리를 강하게 요구했기 때문", "대학의 자율성을 보장하기 위해 두 개념을 분리했기 때문"], "answer": 1, "explanation": "권리 차원의 '교육'은 제도(주로 학교교육)이지만, 교육학 담론의 '교육'은 교수+학습 활동으로 학교 안팎을 모두 포괄합니다."}, {"q": "교육기본법이 지향하는 교육체제로 옳은 것은?", "options": ["폐쇄적 교육체제", "열린 교육체제", "엘리트 교육체제", "학교중심 교육체제"], "answer": 1, "explanation": "교육기본법은 평생교육을 상위 개념으로 하여 학교교육+사회교육을 모두 포함하는 '열린 교육체제'를 지향합니다."}, {"q": "평생교육진흥원의 탄생 배경으로 옳은 것은?", "options": ["기존 기관 없이 완전히 새로 설립된 기관이다", "독학학위제와 학점은행제가 통합되면서 진흥원이 탄생(방송대도 기여)", "민간기관에 위탁 운영으로 출발한 기관이다", "외국의 평생교육 기관을 합병하여 만들어진 기관이다"], "answer": 1, "explanation": "독학학위제와 학점은행제가 국가평생교육진흥원으로 통합되면서 진흥원이 탄생했으며, 방송대도 기여했습니다."}, {"q": "평생학습도시 재평가 주기와 시작 시점으로 옳은 것은?", "options": ["1년 주기, 2015년부터", "2년 주기, 2018년부터", "3년 주기, 2020년부터", "5년 주기, 2022년부터"], "answer": 2, "explanation": "평생학습도시 재평가는 2019년 시범에 이어 2020년부터 3년 주기로 진행됩니다."}, {"q": "제17회 평생학습대상을 수상한 기관은?", "options": ["서울시 관악구청", "송도1동 주민자치센터", "대전시사회적자본지원센터", "한국방송통신대학교"], "answer": 1, "explanation": "제17회 평생학습대상은 송도1동 주민자치센터가 수상한 사례로 언급됩니다."}, {"q": "평생교육 바우처가 갖는 '우리나라 최초의 의의'로 옳은 것은?", "options": ["우리나라 최초로 도입된 대학 학자금 대출 프로그램이다", "우리나라 최초로 취약계층에 교육 참여 예산을 직접 지원한 프로그램", "우리나라 최초로 시행된 해외 유학 장학금 프로그램이다", "우리나라 최초로 도입된 직업훈련 비용 지원 프로그램이다"], "answer": 1, "explanation": "평생교육 바우처는 우리나라 최초로 취약계층에 교육 참여 예산을 직접 지원한 프로그램이라는 의의가 있습니다."}, {"q": "국가평생교육진흥원이 운영하는 학습 포털의 이름은?", "options": ["EBS", "K-Edu", "늘배움", "평생학습관"], "answer": 2, "explanation": "국가평생교육진흥원이 운영하는 학습 포털은 '늘배움'이며, '평생학습'의 우리말입니다."}, {"q": "'늘배움'이라는 단어의 의미로 옳은 것은?", "options": ["'평생교육'의 우리말", "'평생학습'의 우리말", "'직업훈련'의 우리말", "'학점은행'의 우리말"], "answer": 1, "explanation": "늘배움은 '평생학습'의 우리말입니다."}, {"q": "독학학위제의 근거법으로 옳은 것은?", "options": ["평생교육법", "독학에 의한 학위 취득에 관한 법률", "학점인정 등에 관한 법률", "고등교육법"], "answer": 1, "explanation": "독학학위제의 근거법은 '독학에 의한 학위 취득에 관한 법률'입니다."}, {"q": "학점은행제의 근거법으로 옳은 것은?", "options": ["평생교육법", "독학에 의한 학위 취득에 관한 법률", "학점인정 등에 관한 법률", "초중등교육법"], "answer": 2, "explanation": "학점은행제의 근거법은 '학점인정 등에 관한 법률'입니다."}, {"q": "평생교육법 추진체제에서 '5년마다'와 '매년'의 구분으로 옳은 것은?", "options": ["기본계획 5년마다 / 시행계획 매년", "기본계획 매년 / 시행계획 5년마다", "기본계획 3년마다 / 시행계획 매년", "기본계획 5년마다 / 시행계획 3년마다"], "answer": 0, "explanation": "교육부 장관은 5년마다 기본계획을 수립하고, 각 시·도지사는 매년 시행계획을 수립합니다."}, {"q": "평생교육 집행기구 중 시·군·자치구 단위에 해당하는 것은?", "options": ["국가평생교육진흥원", "시·도 평생교육진흥원", "평생교육 관련 협의·논의 기구", "평생학습센터"], "answer": 2, "explanation": "시·군·자치구 단위는 평생교육 관련 협의·논의 기구가 해당합니다."}, {"q": "평생교육 집행기구 중 읍·면·동 단위에 해당하는 것은?", "options": ["국가장애인평생교육진흥센터", "시·도 평생교육진흥원", "평생교육 관련 협의·논의 기구", "평생학습센터 등"], "answer": 3, "explanation": "읍·면·동 단위는 평생학습센터 등이 해당합니다."}, {"q": "평생교육법상 '학교 정규 교육과정 제외'가 의미하는 바는?", "options": ["학교 정규 교육과정을 부정하고 폐지한다는 의미", "학교의 정규 교육과정을 제외한 모든 형태의 조직적 교육 활동을 다룬다는 의미", "오직 학교 외부의 모든 활동만을 다룬다는 의미", "학교 정규 교육과정과 무관하게 운영된다는 의미"], "answer": 1, "explanation": "평생교육법은 '학교의 정규 교육과정을 제외한 모든 형태의 조직적인 교육 활동'을 평생교육으로 정의합니다."}, {"q": "평생교육법 향후 과제로 옳은 것은?", "options": ["전 생애를 따라가는 통합적 정책 필요", "학교교육으로의 완전 통합", "평생교육법 폐지", "민간 위탁 확대"], "answer": 0, "explanation": "향후 과제로 전 생애를 따라가는 통합적 정책이 필요하다고 제시됩니다."}];
+const QUIZ_SIZE = 15;
+
+// Fisher-Yates shuffle
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// 문제 선정 + 각 문제의 보기도 셔플 (정답 위치 랜덤화)
+function prepareQuiz() {
+  const picked = shuffle(ALL_QUESTIONS).slice(0, QUIZ_SIZE);
+  return picked.map(q => {
+    const optsWithIdx = q.options.map((opt, i) => ({ opt, isAnswer: i === q.answer }));
+    const shuffled = shuffle(optsWithIdx);
+    const newAnswer = shuffled.findIndex(x => x.isAnswer);
+    return {
+      q: q.q,
+      options: shuffled.map(x => x.opt),
+      answer: newAnswer,
+      explanation: q.explanation
+    };
+  });
+}
+
+let state = { quiz: [], idx: 0, answers: [], started: false };
+const main = document.getElementById('main');
+const labels = ['A', 'B', 'C', 'D', 'E'];
+
+function renderStart() {
+  document.getElementById('progressWrap').style.display = 'none';
+  document.getElementById('scoreTracker').style.display = 'none';
+  main.innerHTML = `
+    <div class="card start-screen">
+      <h2>📚 시험 대비 모드</h2>
+      <p>출석대체시험 대비 랜덤 퀴즈</p>
+      <div class="start-info">
+        <strong>📌 출제 방식</strong><br>
+        · 전체 98문제 중 <strong>15문제</strong> 무작위 출제<br>
+        · 매번 다른 문제, 보기 순서도 매번 달라요<br>
+        · 답 선택 시 즉시 정답/해설 확인<br>
+        · 마지막에 점수와 틀린 문제 다시 보기
+      </div>
+      <div class="controls" style="max-width: 280px; margin: 0 auto;">
+        <button class="btn btn-primary" id="startBtn">시작하기</button>
+      </div>
+    </div>
+  `;
+  document.getElementById('startBtn').addEventListener('click', startQuiz);
+}
+
+function startQuiz() {
+  state.quiz = prepareQuiz();
+  state.idx = 0;
+  state.answers = [];
+  state.started = true;
+  document.getElementById('progressWrap').style.display = 'flex';
+  document.getElementById('scoreTracker').style.display = 'flex';
+  updateProgress();
+  renderQuestion();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function updateProgress() {
+  const total = state.quiz.length;
+  const done = state.answers.filter(a => a !== undefined).length;
+  document.getElementById('progressFill').style.width = `${(done/total)*100}%`;
+  document.getElementById('progressText').textContent = `${done} / ${total}`;
+  const correctNum = state.answers.filter((a, i) => a !== undefined && a === state.quiz[i].answer).length;
+  const wrongNum = state.answers.filter((a, i) => a !== undefined && a !== state.quiz[i].answer).length;
+  document.getElementById('correctCount').textContent = correctNum;
+  document.getElementById('wrongCount').textContent = wrongNum;
+}
+
+function renderQuestion() {
+  const q = state.quiz[state.idx];
+  const total = state.quiz.length;
+  const answered = state.answers[state.idx];
+  const isCorrect = answered === q.answer;
+
+  main.innerHTML = `
+    ${answered !== undefined ? `
+      <div class="feedback-banner ${isCorrect ? 'correct' : 'wrong'}">
+        ${isCorrect ? '🎉 맞았어요!' : '❌ 틀렸어요'}
+      </div>
+    ` : ''}
+    <div class="card">
+      <div class="q-num">문제 ${state.idx + 1} / ${total}</div>
+      <div class="question">${q.q}</div>
+      <div class="options">
+        ${q.options.map((opt, i) => {
+          let cls = 'option';
+          if (answered !== undefined) {
+            if (i === q.answer) cls += ' correct';
+            else if (i === answered) cls += ' wrong';
+          }
+          return `<button class="${cls}" data-idx="${i}" ${answered !== undefined ? 'disabled' : ''}>
+            <span class="option-label">${labels[i]}</span>
+            <span class="option-text">${opt}</span>
+          </button>`;
+        }).join('')}
+      </div>
+      ${answered !== undefined && q.explanation ? `
+        <div class="explanation"><strong>해설</strong>${q.explanation}</div>
+      ` : ''}
+      <div class="controls">
+        ${state.idx > 0 ? '<button class="btn btn-secondary" id="prevBtn">이전</button>' : ''}
+        ${answered !== undefined ? (
+          state.idx < total - 1
+            ? '<button class="btn btn-primary" id="nextBtn">다음 문제</button>'
+            : '<button class="btn btn-primary" id="finishBtn">결과 보기</button>'
+        ) : ''}
+      </div>
+    </div>
+  `;
+
+  main.querySelectorAll('.option:not(:disabled)').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const choice = parseInt(btn.dataset.idx);
+      state.answers[state.idx] = choice;
+      updateProgress();
+      renderQuestion();
+    });
+  });
+  document.getElementById('prevBtn')?.addEventListener('click', () => { state.idx--; renderQuestion(); window.scrollTo({top:0, behavior:'smooth'}); });
+  document.getElementById('nextBtn')?.addEventListener('click', () => { state.idx++; renderQuestion(); window.scrollTo({top:0, behavior:'smooth'}); });
+  document.getElementById('finishBtn')?.addEventListener('click', renderResult);
+}
+
+function renderResult() {
+  const total = state.quiz.length;
+  const correct = state.answers.filter((a, i) => a === state.quiz[i].answer).length;
+  const wrong = total - correct;
+  const pct = Math.round((correct/total)*100);
+  let msg = '훌륭해요! 시험 준비 잘 되셨네요';
+  if (pct < 60) msg = '핵심 포인트 다시 한번 복습해볼까요?';
+  else if (pct < 80) msg = '거의 다 왔어요! 헷갈리는 부분만 보완하세요';
+  else if (pct < 95) msg = '아주 좋아요! 디테일만 한번 더 점검해보세요';
+
+  main.innerHTML = `
+    <div class="card result">
+      <div class="result-score">${correct}<span>/${total}</span></div>
+      <div class="result-text">정답률 ${pct}% · ${msg}</div>
+      <div class="result-stats">
+        <div class="result-stat">
+          <div class="result-stat-num correct-num">${correct}</div>
+          <div class="result-stat-label">맞은 문제</div>
+        </div>
+        <div class="result-stat">
+          <div class="result-stat-num wrong-num">${wrong}</div>
+          <div class="result-stat-label">틀린 문제</div>
+        </div>
+      </div>
+      <div class="controls" style="max-width: 320px; margin: 0 auto; gap: 8px;">
+        <button class="btn btn-primary" id="retryBtn">새 문제 다시 풀기</button>
+      </div>
+      ${wrong > 0 ? `
+        <div class="review">
+          <h2>틀린 문제 다시 보기</h2>
+          ${state.quiz.map((q, i) => {
+            const ok = state.answers[i] === q.answer;
+            if (ok) return '';
+            return `<div class="review-item">
+              <div class="rq">${i+1}. ${q.q}</div>
+              <div class="ra">정답: ${labels[q.answer]}. ${q.options[q.answer]}</div>
+            </div>`;
+          }).join('')}
+        </div>
+      ` : `<div style="margin-top: 24px; color: var(--correct-strong); font-size: 14px; font-weight: 600;">🎉 전부 맞히셨어요!</div>`}
+    </div>
+  `;
+  document.getElementById('retryBtn').addEventListener('click', () => {
+    startQuiz();
+  });
+  document.getElementById('progressFill').style.width = '100%';
+  document.getElementById('progressText').textContent = `${total} / ${total}`;
+}
+
+renderStart();
+</script>
+</body>
+</html>

@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>지역사회교육론 6강·8강 랜덤 퀴즈</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  :root {
+    --bg: #FAF7F2; --ink: #1A1A1A; --muted: #6B6B6B; --card: #FFFFFF;
+    --border: #E8E2D5; --accent: #2E5C4F; --accent-soft: #E8F0EC;
+    --correct: #16A34A; --correct-soft: #DCFCE7; --correct-strong: #15803D;
+    --wrong: #DC2626; --wrong-soft: #FEE2E2; --wrong-strong: #B91C1C;
+    --shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.04);
+  }
+  html, body { background: var(--bg); color: var(--ink); font-family: 'IBM Plex Sans KR', sans-serif; -webkit-font-smoothing: antialiased; min-height: 100vh; overscroll-behavior-y: contain; }
+  body { background-image: radial-gradient(circle at 10% 0%, rgba(46,92,79,0.04) 0%, transparent 40%), radial-gradient(circle at 90% 100%, rgba(220,38,38,0.03) 0%, transparent 40%); }
+  .app { max-width: 560px; margin: 0 auto; padding: 24px 20px 40px; }
+  header { margin-bottom: 24px; }
+  .eyebrow { font-family: 'Gowun Dodum', serif; color: var(--accent); font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 6px; }
+  h1 { font-family: 'Gowun Dodum', serif; font-size: 24px; font-weight: 400; line-height: 1.3; margin-bottom: 8px; }
+  .subtitle { color: var(--muted); font-size: 14px; }
+  .progress-wrap { margin-top: 20px; display: flex; align-items: center; gap: 12px; }
+  .progress-bar { flex: 1; height: 6px; background: var(--border); border-radius: 999px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--accent); border-radius: 999px; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); width: 0%; }
+  .progress-text { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; min-width: 56px; text-align: right; }
+  .score-tracker { display: flex; gap: 8px; margin-top: 12px; font-size: 12px; color: var(--muted); }
+  .score-pill { padding: 4px 10px; border-radius: 999px; background: var(--card); border: 1px solid var(--border); font-weight: 600; }
+  .score-pill.correct-pill { color: var(--correct-strong); border-color: var(--correct); }
+  .score-pill.wrong-pill { color: var(--wrong-strong); border-color: var(--wrong); }
+  .feedback-banner { margin-bottom: 16px; padding: 14px 18px; border-radius: 12px; font-weight: 700; font-size: 16px; text-align: center; animation: slideIn 0.3s ease-out; letter-spacing: 0.02em; }
+  @keyframes slideIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+  .feedback-banner.correct { background: var(--correct); color: white; }
+  .feedback-banner.wrong { background: var(--wrong); color: white; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 24px 20px; box-shadow: var(--shadow); animation: fadeIn 0.35s ease-out; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .q-num { font-family: 'Gowun Dodum', serif; color: var(--accent); font-size: 13px; letter-spacing: 0.05em; margin-bottom: 12px; }
+  .question { font-size: 16px; font-weight: 500; line-height: 1.55; margin-bottom: 20px; word-break: keep-all; }
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .option { display: flex; align-items: flex-start; gap: 12px; padding: 14px 16px; background: var(--bg); border: 1.5px solid var(--border); border-radius: 12px; cursor: pointer; font-family: inherit; font-size: 14.5px; line-height: 1.5; text-align: left; width: 100%; color: var(--ink); transition: all 0.15s ease; word-break: keep-all; position: relative; }
+  .option:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-soft); }
+  .option:active:not(:disabled) { transform: scale(0.99); }
+  .option:disabled { cursor: default; }
+  .option-label { flex-shrink: 0; width: 24px; height: 24px; border-radius: 50%; background: var(--card); border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: var(--muted); transition: all 0.15s ease; }
+  .option-text { flex: 1; }
+  .option.correct { background: var(--correct-soft); border-color: var(--correct); border-width: 2.5px; color: var(--correct-strong); font-weight: 600; }
+  .option.correct .option-label { background: var(--correct); border-color: var(--correct); color: white; }
+  .option.correct .option-text { padding-right: 56px; }
+  .option.correct::after { content: '✓ 정답'; position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: var(--correct); color: white; font-size: 11px; font-weight: 700; padding: 4px 9px; border-radius: 6px; letter-spacing: 0.02em; }
+  .option.wrong { background: var(--wrong-soft); border-color: var(--wrong); border-width: 2.5px; color: var(--wrong-strong); font-weight: 600; }
+  .option.wrong .option-label { background: var(--wrong); border-color: var(--wrong); color: white; }
+  .option.wrong .option-text { padding-right: 56px; }
+  .option.wrong::after { content: '✗ 오답'; position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: var(--wrong); color: white; font-size: 11px; font-weight: 700; padding: 4px 9px; border-radius: 6px; letter-spacing: 0.02em; }
+  .explanation { margin-top: 16px; padding: 14px 16px; background: var(--accent-soft); border-left: 3px solid var(--accent); border-radius: 8px; font-size: 13.5px; line-height: 1.6; color: var(--ink); animation: fadeIn 0.3s ease-out; }
+  .explanation strong { color: var(--accent); display: block; margin-bottom: 4px; font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase; }
+  .controls { margin-top: 20px; display: flex; gap: 10px; }
+  .btn { flex: 1; padding: 14px 20px; border: none; border-radius: 12px; font-family: inherit; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.15s ease; }
+  .btn-primary { background: var(--ink); color: white; }
+  .btn-primary:hover { background: #000; }
+  .btn-primary:active { transform: scale(0.98); }
+  .btn-secondary { background: transparent; color: var(--muted); border: 1.5px solid var(--border); }
+  .btn-secondary:hover { border-color: var(--ink); color: var(--ink); }
+  .start-screen { text-align: center; padding: 40px 20px; }
+  .start-screen h2 { font-family: 'Gowun Dodum', serif; font-weight: 400; font-size: 22px; margin-bottom: 12px; }
+  .start-screen p { color: var(--muted); font-size: 14px; line-height: 1.6; margin-bottom: 24px; }
+  .start-info { background: var(--accent-soft); border-radius: 12px; padding: 16px; margin-bottom: 20px; font-size: 13.5px; line-height: 1.6; color: var(--ink); text-align: left; }
+  .start-info strong { color: var(--accent); }
+  .result { text-align: center; padding: 32px 20px; }
+  .result-score { font-family: 'Gowun Dodum', serif; font-size: 64px; font-weight: 400; color: var(--accent); line-height: 1; margin-bottom: 8px; }
+  .result-score span { font-size: 32px; color: var(--muted); }
+  .result-text { font-size: 16px; color: var(--muted); margin-bottom: 16px; }
+  .result-stats { display: flex; justify-content: center; gap: 24px; margin-bottom: 28px; padding: 16px; background: var(--bg); border-radius: 12px; border: 1px solid var(--border); }
+  .result-stat { text-align: center; }
+  .result-stat-num { font-family: 'Gowun Dodum', serif; font-size: 32px; font-weight: 400; line-height: 1; margin-bottom: 4px; }
+  .result-stat-num.correct-num { color: var(--correct-strong); }
+  .result-stat-num.wrong-num { color: var(--wrong-strong); }
+  .result-stat-label { font-size: 12px; color: var(--muted); letter-spacing: 0.05em; }
+  .review { text-align: left; margin-top: 24px; border-top: 1px solid var(--border); padding-top: 20px; }
+  .review h2 { font-family: 'Gowun Dodum', serif; font-weight: 400; font-size: 18px; margin-bottom: 12px; }
+  .review-item { padding: 12px 14px; border-radius: 10px; margin-bottom: 8px; font-size: 13.5px; line-height: 1.5; background: var(--bg); border: 1px solid var(--border); border-left: 3px solid var(--wrong); }
+  .review-item .rq { font-weight: 500; margin-bottom: 4px; }
+  .review-item .ra { color: var(--muted); font-size: 13px; }
+  footer { text-align: center; margin-top: 32px; font-size: 12px; color: var(--muted); font-family: 'Gowun Dodum', serif; }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="eyebrow">지역사회교육론</div>
+    <h1 id="title">6강·8강 랜덤 퀴즈</h1>
+    <div class="subtitle" id="subtitle">전체 101문제 중 무작위 15문제 출제</div>
+    <div class="progress-wrap" id="progressWrap" style="display:none;">
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-text" id="progressText">0 / 15</div>
+    </div>
+    <div class="score-tracker" id="scoreTracker" style="display:none;">
+      <div class="score-pill correct-pill">✓ <span id="correctCount">0</span></div>
+      <div class="score-pill wrong-pill">✗ <span id="wrongCount">0</span></div>
+    </div>
+  </header>
+  <main id="main"></main>
+  <footer>made with ripo · 학습 퀴즈</footer>
+</div>
+
+<script>
+const ALL_QUESTIONS = [{"q": "지역을 하나의 평생학습체제로 구축하기 위해 가장 필요한 것은?", "options": ["학교교육의 확대", "지역 자원들 간의 연계", "중앙정부의 직접 운영", "민간기업의 단독 투자"], "answer": 1, "explanation": "지역을 평생학습체제로 구축하려면 지역의 자원들 간 연계가 필요하며, 개인의 평생학습이 통합적으로 작동하려면 물적·인적 자원의 연계가 필수입니다."}, {"q": "포천시 관인면 '장독대 마을'에 대한 설명으로 옳지 않은 것은?", "options": ["한탄강 홍수 조절용 댐 건설로 형성된 집단 이주지이다", "2012년 인근 산자락에 집단 이주하여 형성되었다", "예술가 집단이 1년간 거주하며 한옥을 복원하였다", "약 50년 된 근대가옥을 집단 이주지에 복원하였다"], "answer": 2, "explanation": "예술가 집단은 3개월간(1년이 아님) 거주하며 약 50년 된 근대가옥을 복원하였습니다."}, {"q": "장독대 마을의 프로젝트명은?", "options": ["관인 한옥 복원 프로젝트", "포천 도롱이집 이주 프로젝트", "한탄강 마을 재건 사업", "장독대 문화예술 프로젝트"], "answer": 1, "explanation": "PDF 강의록 표기 기준 프로젝트명은 '포천 도롱이집 이주 프로젝트'입니다."}, {"q": "장독대 마을 사례의 핵심 의미로 가장 적절한 것은?", "options": ["관광 자원을 활용한 경제 활성화", "교육을 기제로 활용한 지역 주체·부문의 연계", "전통문화 보존 사업의 국가적 확대", "예술인 일자리 창출"], "answer": 1, "explanation": "교육을 기재(기제)로 활용하여 지역의 다양한 주체·부문을 연계함으로써 수몰 갈등 해소와 새로운 삶터에서의 자생력·경쟁력을 확보하는 것이 핵심 의미입니다."}, {"q": "지역교육 발전 맥락에서 연계의 필요성으로 옳지 않은 것은?", "options": ["지역 자원이 한정되어 있고 고르게 분포되어 있지 않다", "현대인들은 정보의 홍수 속에 살고 있다", "획일화된 제도교육이 개인의 다양한 욕구에 대응하지 못한다", "지역 자원의 독점적 활용을 통해 경쟁력을 확보해야 한다"], "answer": 3, "explanation": "연계의 필요성은 자원 한정·불균등, 정보 홍수, 비용 감소, 획일화된 제도교육의 한계, 전문지도자 육성·평생학습 기회 확대 등입니다. '독점적 활용'은 연계의 취지에 반합니다."}, {"q": "한정된 자원을 연계할 때 얻을 수 있는 효과는?", "options": ["인구 증가", "비용 감소", "세금 인상", "제도교육 강화"], "answer": 1, "explanation": "한정된 자원을 연계하면 비용 감소 효과를 얻을 수 있습니다."}, {"q": "지역교육 연계에서 평생교육사에게 요구되는 핵심 역할은?", "options": ["지역 정책 수립을 총괄하는 행정 감독자", "지역 평생학습 재정을 운영하는 관리자", "지역의 인적·물적·사업·정보의 네트워커", "주민에게 직접 강의하는 프로그램 강사"], "answer": 2, "explanation": "연계의 필요성에서 도출되는 결론으로, 평생교육사에게는 지역의 인적·물적·사업·정보의 '네트워커' 역할이 요구됩니다."}, {"q": "연계를 가로막는 장애요인 3가지에 해당하지 않는 것은?", "options": ["서로에 대한 신뢰와 이해 미흡", "시간과 재원 부족", "의사소통과 지속성의 어려움", "법적 규제의 부재"], "answer": 3, "explanation": "장애요인 3가지는 ①신뢰·이해 미흡 ②시간·재원 부족 ③의사소통·지속성의 어려움입니다. 법적 규제는 해당되지 않습니다."}, {"q": "서로에 대한 신뢰 자체를 부르는 용어는?", "options": ["문화적 자본", "사회적 자본", "인적 자본", "경제적 자본"], "answer": 1, "explanation": "서로에 대한 신뢰 자체를 '사회적 자본'이라고 부릅니다."}, {"q": "연계 방식 4가지에 해당하지 않는 것은?", "options": ["인적 연계", "사업 연계", "재정 연계", "공간 연계"], "answer": 2, "explanation": "연계 방식 4가지는 인적 연계, 사업 연계, 정보 연계, 공간 연계입니다. '재정 연계'는 포함되지 않습니다."}, {"q": "'평생학습 정보망을 운영하여 주민에게 다양한 정보를 제공'하는 연계 방식은?", "options": ["인적 연계", "사업 연계", "정보 연계", "공간 연계"], "answer": 2, "explanation": "평생학습 정보망 운영을 통해 주민에게 정보를 제공하는 것은 정보 연계에 해당합니다."}, {"q": "'공간 자원을 조사하고 데이터베이스화하여 원활한 자원 교류 및 효율적 활용을 도모'하는 연계 방식은?", "options": ["인적 연계", "사업 연계", "정보 연계", "공간 연계"], "answer": 3, "explanation": "공간 자원 조사 및 데이터베이스화는 공간 연계의 주요 내용입니다."}, {"q": "'회원, 교사·강사, 자원봉사자 등 인적 자원을 상호 교류'하는 연계 방식은?", "options": ["인적 연계", "사업 연계", "정보 연계", "공간 연계"], "answer": 0, "explanation": "인적 자원의 상호 교류는 인적 연계에 해당합니다."}, {"q": "연계 주체를 '설립 주체와 운영 재원의 조달 경로'에 따라 분류한 것은?", "options": ["교육 전용 시설 ↔ 일반 시설", "공공기관 ↔ 민간기관", "도시 ↔ 농촌", "대형 ↔ 소형"], "answer": 1, "explanation": "설립 주체와 운영 재원 조달 경로에 따른 분류는 공공기관(국가/지자체 설립, 세금)과 민간기관(민간 설립, 개인재산·기부금)입니다."}, {"q": "연계 절차 3단계를 순서대로 바르게 나열한 것은?", "options": ["준비 → 확대 전문화 → 실행 및 유지", "준비 → 실행 및 유지 → 확대 전문화", "실행 및 유지 → 준비 → 확대 전문화", "확대 전문화 → 준비 → 실행 및 유지"], "answer": 1, "explanation": "연계 절차는 ①준비 단계 → ②실행 및 유지 단계(MOU, 실무협의회) → ③확대 전문화 단계 순서입니다."}, {"q": "연계 절차 중 'MOU 체결과 실무협의회 구성·운영'이 이루어지는 단계는?", "options": ["준비 단계", "실행 및 유지 단계", "확대 전문화 단계", "사후 평가 단계"], "answer": 1, "explanation": "협약 체결(MOU)과 대표·전문가 중심 실무협의회 구성·운영은 실행 및 유지 단계에서 이루어집니다."}, {"q": "연계 절차 중 '연계 목표 달성 여부 및 만족도 평가, 성과의 공유 및 분배'가 이루어지는 단계는?", "options": ["준비 단계", "실행 및 유지 단계", "확대 전문화 단계", "갈등 조정 단계"], "answer": 2, "explanation": "평가와 성과 공유·분배는 확대 전문화 단계에서 이루어집니다."}, {"q": "사랑나누리 방과후 센터에 대한 설명으로 옳은 것은?", "options": ["2004년 서울특별시 관악구에서 시범 사업으로 시작되었다", "2006년 한국방송통신대학교 이천학생회 학생들이 주축이 되어 시작되었다", "대전시사회적자본지원센터가 비영리 단체로 운영하고 있다", "대학생 봉사 동아리 활동의 일환으로 만들어진 단체이다"], "answer": 1, "explanation": "사랑나누리 방과후 센터는 2006년 한국방송통신대학교 이천학생회 학생들이 주축이 되어 시작되었습니다."}, {"q": "사랑나누리 방과후 센터의 주된 지원 대상은?", "options": ["고령자", "취약계층 청소년", "발달장애인", "다문화가정"], "answer": 1, "explanation": "사랑나누리 방과후 센터는 취약계층 청소년에게 사회적 안전망을 제공하는 비영리 단체입니다."}, {"q": "사랑나누리 방과후 센터에서 '동문회 사무실을 청소년 전용공간으로 개조'한 것은 어떤 연계에 해당하는가?", "options": ["인적 연계", "사업 연계", "정보 연계", "시설(공간) 연계"], "answer": 3, "explanation": "동문회 사무실을 청소년 전용공간으로 개조한 것은 시설(공간) 연계에 해당합니다."}, {"q": "서울특별시 관악구에 대한 설명으로 옳지 않은 것은?", "options": ["2004년 서울시 최초로 평생학습도시에 선정되었다", "학습권역을 5개로 구획하였다", "거점 교육기관에 사회복지관과 청소년회관이 포함된다", "전국 최초로 평생학습도시 사업을 시작하였다"], "answer": 3, "explanation": "관악구는 '서울시' 최초로 평생학습도시에 선정되었습니다. 전국 최초가 아닙니다."}, {"q": "관악구 5개 평생학습마을 권역에 해당하지 않는 것은?", "options": ["상업도심 권역", "난곡 권역", "강남 권역", "낙성대 권역"], "answer": 2, "explanation": "관악구 5개 권역은 상업도심·난곡·뉴타운·서울대·낙성대 권역입니다. 강남 권역은 포함되지 않습니다."}, {"q": "관악구 평생학습 마을축제의 의의로 가장 적절한 것은?", "options": ["교육부의 평생교육정책과 행정안전부의 지방자치정책이 만나는 장", "기획재정부의 예산정책과 문화체육관광부의 문화정책이 만나는 장", "교육청과 시청이 공동 주관하는 학습 성과 발표회", "민간기업의 후원으로 운영되는 지역 마케팅 행사"], "answer": 0, "explanation": "관악구 마을축제는 지역 중심의 평생교육정책(교육부)과 지방자치정책(행정안전부)이 만나는 장으로서의 의의를 가집니다."}, {"q": "지역연계를 위한 지역교육의 과제 7가지에 해당하지 않는 것은?", "options": ["지역연계의 필요성에 대한 인식 제고", "지역자원 지도 작성", "중앙정부 주도의 사업 일원화", "지역 의제 발굴과 주민 조직화"], "answer": 2, "explanation": "지역교육의 과제는 민(民) 주도와 주민참여를 강조합니다. 중앙정부 주도의 일원화는 과제로 제시되지 않습니다."}, {"q": "'지도 작성 과정 자체를 지역교육의 일환으로 진행'하는 지역교육의 과제는?", "options": ["지역공동체 구축을 위한 지역교육", "지역연계 활성화를 위한 지역자원 지도 작성", "연계·협력의 비전에 대한 합의 도출", "지역 의제 발굴과 주민 조직화"], "answer": 1, "explanation": "지역자원 지도 작성은 과정 자체를 지역교육의 일환으로 진행하는 과제입니다."}, {"q": "8강의 주체적 주민참여 내용이 근거한 자료는?", "options": ["교육부가 발간한 『평생교육백서』의 평생학습마을 사례", "대전시사회적자본지원센터 활동가의 『성장사례조사 사업결과 보고서』", "한국교육개발원이 수행한 평생학습 현장 연구보고서", "서울시 마을공동체 종합계획서의 활동가 인터뷰 자료"], "answer": 1, "explanation": "출처는 대전시사회적자본지원센터 활동가들의 『성장사례조사 사업결과 보고서』이며, 학술 연구가 아니라 사업 결과를 보고서로 정리한 것입니다."}, {"q": "8강 출처 자료의 성격에 대한 설명으로 옳은 것은?", "options": ["대학 연구진이 수행한 순수 학술 연구 결과물이다", "사업 결과를 검토해 보고서로 정리한 것이며 연구적 성격이 가미되었다", "중앙부처가 발간한 공식 정책 백서의 일부이다", "민간 컨설팅 기업이 의뢰받아 작성한 시장조사 자료이다"], "answer": 1, "explanation": "학술 연구가 아니라 사업 결과를 검토해 보고서로 정리한 것이며, 다만 연구적 성격이 가미되어 있습니다."}, {"q": "'나로부터' 1단계에서 가장 중요한 가치는?", "options": ["효율", "함께", "수익", "경쟁"], "answer": 1, "explanation": "1단계의 중요 가치는 '함께'이며, 감정적으로는 '그저 즐거운 상태'에 해당합니다."}, {"q": "'나로부터' 1단계의 감정적 상태로 가장 적절한 것은?", "options": ["치열한 경쟁심", "그저 즐거운 상태", "강한 의무감", "지속적 긴장감"], "answer": 1, "explanation": "1단계는 '그저 즐거운 상태'로 표현되는 감정적 상태입니다."}, {"q": "'나로부터' 2단계의 핵심을 가장 잘 설명한 것은?", "options": ["외부의 지시와 요구에 충실히 따르는 수동적 태도", "나로부터의 선택 (내가 좋아서 내 의지로 하는 것)", "조직의 명령과 규칙에 복종하는 헌신적 태도", "정부 보조금에 의존하여 활동을 이어가는 태도"], "answer": 1, "explanation": "2단계의 핵심은 '나로부터의 선택', 즉 '내가 좋아서 내 의지로 하는 것'입니다."}, {"q": "'나로부터' 2단계에서 중심이 되는 고민은?", "options": ["어떻게 더 많은 회원을 모을 것인가", "사업에 맞는 예산을 어떻게 충당할 것인가", "어떻게 외부의 지원을 거부할 것인가", "어떻게 빠르게 수익을 낼 것인가"], "answer": 1, "explanation": "2단계의 중심 고민은 '사업에 맞는 예산을 어떻게 충당할 것인가'입니다. 시재(개인 주머니)를 털기 어려운 일반 서민의 경우 예산 신청·확보가 핵심 고민입니다."}, {"q": "'나로부터' 1단계에서 2단계로 전환하지 못하게 되는 결정적 실패 요인은?", "options": ["예산 부족", "함께하는 즐거움의 부재", "리더의 부재", "행정 절차의 복잡함"], "answer": 1, "explanation": "함께하는 즐거움이 없으면 다음 단계로 나가지 못합니다."}, {"q": "'나로부터' 2단계의 자발적 헌신에 대한 설명으로 옳은 것은?", "options": ["외부의 지시와 요구에 의해 이루어진다", "감정 상태와 경험 공유를 기반으로 스스로 하는 것이다", "재정적 보상이 전제되어야 한다", "법적 의무에 의해 발생한다"], "answer": 1, "explanation": "2단계의 자발적 헌신은 감정 상태 + 경험 공유 기반으로, 지시·요구가 아닌 스스로 하는 헌신입니다."}, {"q": "사적 모임과 공적 모임을 구분하는 기준은?", "options": ["모임의 크기(참여 인원수)에 따라 구분", "어떤 이익을 만들어 내고 있는지에 따라 구분", "참여자의 학력 수준에 따라 구분", "모임의 역사와 지속 기간에 따라 구분"], "answer": 1, "explanation": "사적/공적 모임의 구분 기준은 모임의 크기가 아니라 '어떤 이익을 만들어 내고 있는지'입니다."}, {"q": "다음 중 사적 모임에 해당하는 경우는?", "options": ["우리 마을과 이웃 마을 모두에 이익이 되는 활동", "우리 마을을 이롭게 하고자 이웃 마을에 손해를 끼치는 활동", "지역 전체에 이익이 되는 환경 가꾸기", "공동체 전체의 안전을 위한 활동"], "answer": 1, "explanation": "우리 마을을 이롭게 하고자 이웃 마을에 손해를 끼친다면 공적 사업이 아닌 사적 모임에 해당합니다."}, {"q": "공적 모임으로 가는 발전 흐름을 순서대로 바르게 나열한 것은?", "options": ["재미로 시작 → 타인에 대한 배려 → 자발적 참여 → 삶의 질 변화 → 공동체 형성", "재미로 시작 → 자발적 참여 → 타인에 대한 배려 → 삶의 질 변화 → 공동체 형성", "자발적 참여 → 재미로 시작 → 공동체 형성 → 삶의 질 변화 → 타인에 대한 배려", "공동체 형성 → 재미로 시작 → 자발적 참여 → 타인에 대한 배려 → 삶의 질 변화"], "answer": 1, "explanation": "공적 모임 발전 흐름: 재미로 시작 → 자발적 참여(적성·소질 매치) → 타인에 대한 배려(공적 분기점) → 삶의 질 변화 → 공동체 형성"}, {"q": "공적 모임으로 넘어가는 '분기점'에 해당하는 것은?", "options": ["재미", "자발적 참여", "타인에 대한 배려", "공동체 형성"], "answer": 2, "explanation": "타인에 대한 배려가 사적 모임에서 공적 모임으로 넘어가는 분기점입니다."}, {"q": "느티나무놀이터 모임에 대한 설명으로 옳은 것은?", "options": ["대전시 동구 신탄진동 어린이 모임", "대전시 서구 복수동 영유아 엄마들의 모임", "대전시 중구 은행동 청소년 모임", "서울시 서초구 잠원동 영유아 엄마 모임"], "answer": 1, "explanation": "느티나무놀이터는 대전시 서구 복수동 영유아 엄마들의 모임입니다."}, {"q": "느티나무놀이터 모임의 시작 계기는?", "options": ["구청의 위탁 사업 공모에 응모하여 시작됨", "4세 아들을 둔 한 주부가 놀이터에 갔다가 또래 엄마들과 친해진 것", "대학 동문회의 자선사업으로 영유아 가정을 지원함", "초등학교 학부모회가 영유아 가정을 위해 제안함"], "answer": 1, "explanation": "4세 아들을 둔 한 주부가 놀이터에 갔다가 또래 엄마들과 친해지면서 시작되었습니다."}, {"q": "느티나무놀이터가 정식 모임으로 형성된 계기는?", "options": ["2014년 시청의 직접 지원사업 대상자로 선정됨", "2016년 6월 대전시사회적자본지원센터 '모이자' 사업에 응모·당선", "2018년 교육부의 마을공동체 시범사업 대상으로 선정됨", "2020년 코로나 대응 자조모임 긴급지원금을 받음"], "answer": 1, "explanation": "2016년 6월 대전시사회적자본지원센터의 '모이자' 사업에 응모·당선되어 약간의 예산을 확보하면서 정식 모임이 형성되었습니다."}, {"q": "빛나리신계 모임에 대한 설명으로 옳은 것은?", "options": ["대전시 유성구 노은초등학교 학부모들의 환경 모임", "대전시 서구 복수동 신계초등학교 엄마들의 환경 문제 관심 모임", "대전시 중구 효동 신계초 자율방범대 학부모 모임", "서울시 관악구 신림동 신계동 청소년 환경 모임"], "answer": 1, "explanation": "빛나리신계는 대전시 서구 복수동 신계초등학교 엄마들 모임으로, 환경 문제(자연환경+사회환경)에 관심을 가집니다."}, {"q": "느티나무놀이터와 빛나리신계가 처음 만난 계기는?", "options": ["행정안전부가 주관한 우수 마을공동체 공모전 자리", "대전시사회적자본지원센터가 기획한 '대전 마을공동체 탐방'", "교육부가 운영한 학부모 대상 정기 워크숍 자리", "주민센터가 매월 개최한 마을 간담회 자리"], "answer": 1, "explanation": "두 모임은 대전시사회적자본지원센터가 기획한 '대전 마을공동체 탐방'에서 처음 만났습니다."}, {"q": "'꿈빛행복맘'에 대한 설명으로 옳지 않은 것은?", "options": ["2017년 느티나무놀이터와 빛나리신계가 의기투합하여 결성되었다", "약 30여 명 규모이다", "빛나리신계의 환경 관심과 느티나무놀이터의 육아 관심이 결합되었다", "최종 발전 형태는 마을 평생학습관 설립이었다"], "answer": 3, "explanation": "꿈빛행복맘의 최종 발전 형태는 '마을 어린이도서관' 공간 기획 및 실제 도서관 설립입니다. 평생학습관이 아닙니다."}, {"q": "꿈빛행복맘의 활동에 해당하지 않는 것은?", "options": ["마을 녹색환경 가꾸기", "엄마와 아이가 함께하는 프리마켓", "마을학교", "지역 정치 캠페인"], "answer": 3, "explanation": "꿈빛행복맘의 활동은 마을 녹색환경 가꾸기, 엄마와 아이가 함께하는 프리마켓, 마을학교이며, 정치 캠페인은 포함되지 않습니다."}, {"q": "복수동 사례의 주체적 주민참여 핵심 흐름으로 가장 적절한 것은?", "options": ["관청 주도 → 단체 결성 → 개인 동원", "개인(낱낱) → 개인과 개인이 이어지는 행위 → 마을 주민으로서의 자신 인식", "중앙 정책 → 지역 사업 → 사후 평가", "예산 확보 → 사업 기획 → 행정 집행"], "answer": 1, "explanation": "핵심 흐름은 개인(낱낱) → 개인과 개인이 이어지는 행위(워크숍·회의) → 마을 주민으로서의 자신 인식입니다."}, {"q": "석교동 '안전안심마을' 만들기 사례에 대한 설명으로 옳은 것은?", "options": ["대전시 석교동 알짬마을도서관에서 '안전마을학교' 과정을 개설하였다", "서울시 석교동 주민센터의 주관 사업이다", "행정안전부가 단독으로 추진한 시범 사업이다", "초등학생만을 대상으로 하는 안전 교육 프로그램이다"], "answer": 0, "explanation": "석교동 안전안심마을은 대전시 석교동 알짬마을도서관의 '안전마을학교' 과정에서 시작되었습니다."}, {"q": "석교동 안전안심마을의 합의 도출 방식으로 옳은 것은?", "options": ["전문가의 일방적 설명회와 공청회", "모여서 떠들고 함께 활동하는 방식", "온라인 투표와 설문조사 중심", "행정기관의 일방적 결정"], "answer": 1, "explanation": "일방적 설명회·공청회가 아니라 '모여서 떠들고 함께 활동하는 방식'으로 합의를 도출하였습니다."}, {"q": "석교동에서 장소 관련 조사를 위해 사용한 방법은?", "options": ["델파이 조사", "커뮤니티 매핑", "SWOT 분석", "포커스 그룹 인터뷰"], "answer": 1, "explanation": "장소 관련 조사이므로 '커뮤니티 매핑'을 활용하였습니다."}, {"q": "석교동 안전안심마을의 협약·활동에 해당하지 않는 것은?", "options": ["안전마을가게 협약", "안전마을 네트워크 협약식(MOU)", "주민이 직접 가로등 설치", "위험·안전 장소를 아이들이 직접 매핑"], "answer": 2, "explanation": "주민이 직접 가로등을 설치한 것이 아니라, 행정기관에 건의하여 가로등을 설치하게 한 것입니다. 그 결과 '논의해서 건의하니까 되더라'는 성공 체험을 얻었습니다."}, {"q": "주체적 주민참여 과정의 학습 3가지 핵심 요소에 해당하지 않는 것은?", "options": ["질문의 시작 = 수다", "스스로 말하게 하는 회의 = 학습의 장", "사회적 의제를 만드는 조사과정", "전문가 강의 중심의 교육"], "answer": 3, "explanation": "주체적 주민참여 학습 3요소는 ①수다(질문의 시작) ②스스로 말하게 하는 회의(학습의 장) ③조사과정(사회적 의제 도출)입니다. 전문가 강의는 포함되지 않습니다."}, {"q": "'수다'에 대한 설명으로 옳지 않은 것은?", "options": ["타인과 경계를 만들지 않는다", "일상의 자기 언어로 생각·느낌을 말한다", "공식 회의를 통한 의제 결정의 자리이다", "외부로부터 오는 문제 자각 → 공론화 → 문제 해결 동력 확보의 기능을 한다"], "answer": 2, "explanation": "수다는 공식 회의가 아니라, 아름아름 아는 사람들과 일상 언어로 편하게 말 거는 것입니다. 공식 회의는 다음 단계입니다."}, {"q": "마을의 '일상적 학습의 장'으로 가장 적절한 것은?", "options": ["수다", "회의", "강의실", "축제"], "answer": 1, "explanation": "회의가 마을의 일상적 학습의 장이며, 학습은 학교·교육 프로그램만이 아니라 회의의 장에서도 이루어집니다."}, {"q": "주민참여 회의에서 동기부여가 강해지는 조건으로 옳은 것은?", "options": ["리더가 결정을 빠르게 내려 회의가 짧게 끝날 때", "'스스로 하고 싶은 이야기를 했다'와 '우리 모두가 결정한 의견이다'라고 느껴질 때", "외부 전문가가 회의 결론을 명확히 제시해줄 때", "다수결로 빠르게 결론이 나서 시간이 절약될 때"], "answer": 1, "explanation": "'스스로 하고 싶은 이야기를 했다'고 느껴질 때와 '우리 모두가 결정한 의견이다'라고 느껴질 때 결정에 대한 신뢰도 상승과 행동 동기 강화가 이루어집니다."}, {"q": "사회적 의제 도출의 출발점은?", "options": ["전문가가 정책 자료를 분석하여 도출하는 것", "타인을 관찰하고 타인의 욕구를 읽어내는 것", "정부가 우선순위 시책을 발표하는 것", "여론조사 결과를 통계적으로 분석하는 것"], "answer": 1, "explanation": "타인을 관찰하고 타인의 욕구를 읽어내는 것이 사회적 의제 도출의 출발점입니다."}, {"q": "사회적 의제를 만드는 조사 방법에 해당하지 않는 것은?", "options": ["마을 한 바퀴 돌아보기", "마을지도 제작", "마을사람 인터뷰와 설문조사", "중앙정부의 통계자료만 활용"], "answer": 3, "explanation": "조사 방법은 ①마을 한 바퀴 돌아보기 ②마을지도 제작 ③마을사람 인터뷰 ④설문조사 ⑤조사 결과 전체 주민과 공유입니다. 중앙정부 통계만 활용하는 것은 아닙니다."}, {"q": "한 모임 안의 '말걸기'의 특징으로 옳은 것은?", "options": ["국기에 대한 경례로 시작하는 격식 있는 회의", "둥그렇게 모여앉은 '수다에 가까운 회의'", "사회자가 모든 발언을 지명하는 회의", "투표로만 결정하는 회의"], "answer": 1, "explanation": "한 모임 안의 말걸기는 둥그렇게 모여앉은 '수다에 가까운 회의'로, 날씨 얘기·주변 얘기에서 본 안건으로 점진적으로 진행됩니다."}, {"q": "'모임과 모임을 이어주는 말걸기'를 의미하는 용어는?", "options": ["내부 말걸기", "네트워크 말걸기", "공식 협약", "관계자 회의"], "answer": 1, "explanation": "모임과 모임을 이어주는 말걸기를 '네트워크 말걸기'라고 하며, 복수동 사례에서 센터의 마을공동체 탐방을 통해 느티나무놀이터와 빛나리신계가 만난 것이 그 예입니다."}, {"q": "사회적 각성에서 욕구의 변화 순서로 옳은 것은?", "options": ["마을의 욕구 → 조직의 욕구 → 개인의 욕구", "개인의 욕구 → 조직의 욕구 → 마을의 욕구", "조직의 욕구 → 개인의 욕구 → 마을의 욕구", "개인의 욕구 → 마을의 욕구 → 조직의 욕구"], "answer": 1, "explanation": "사회적 각성의 과정에서 욕구는 '개인의 욕구 → 조직의 욕구 → 마을의 욕구' 순으로 변화합니다."}, {"q": "지역의 리더에 대한 정의로 가장 적절한 것은?", "options": ["선거에서 다수의 지지를 받은 선출직 공무원", "자기 스스로 자신의 변화과정을 기획·설계할 수 있는 사람", "지역에서 최다 표를 받아 임명된 대표 인물", "마을에 가장 오래 거주하며 영향력을 가진 주민"], "answer": 1, "explanation": "지역의 리더는 자기 스스로 자신의 변화과정을 기획·설계할 수 있는 사람이며, 리더는 여럿일수록 좋습니다."}, {"q": "주민참여 활성화를 위한 지역교육의 과제 3가지에 해당하지 않는 것은?", "options": ["주체적 주민참여 과정의 아카이빙", "퍼실리테이터로서의 지역교사 양성", "일상적 공간 플랫폼으로서의 평생학습관 운영", "전문 강사 자격제도의 의무화"], "answer": 3, "explanation": "주민참여 활성화 과제 3가지는 ①아카이빙(사람책) ②퍼실리테이터로서의 지역교사 양성 ③일상적 공간 플랫폼으로서 평생학습관 운영입니다. 전문 강사 자격제도 의무화는 포함되지 않습니다."}, {"q": "'사람책 아카이빙'에 대한 설명으로 옳지 않은 것은?", "options": ["사회적 지명도 높은 분만 대상으로 한다", "헌신적으로 일해 오신 분, 가정 뒷바라지 해오신 분도 포함한다", "인터뷰 방식 조사로 축적한다", "지역의 역사적 자원이 풍부해진다"], "answer": 0, "explanation": "사람책 아카이빙은 사회적 지명도가 높은 분뿐 아니라 헌신적으로 일해 오신 분, 가정 뒷바라지 해오신 분도 포함합니다."}, {"q": "퍼실리테이터에게 필요한 2가지 역량으로 옳은 것은?", "options": ["강의역량 + 평가역량", "관계형성 지원역량 + 자원연계 지원역량", "재무관리역량 + 행정역량", "홍보역량 + 모금역량"], "answer": 1, "explanation": "퍼실리테이터에게 필요한 2가지 역량은 ①관계형성 지원역량 ②자원연계 지원역량이며, 직접 무언가를 하는 게 아니라 주민들이 하도록 '지원'하는 역할입니다."}, {"q": "일상적 공간 플랫폼으로서의 평생학습관 운영에 대한 설명으로 가장 적절한 것은?", "options": ["프로그램 진행과 동아리 지원 공간으로만 한정한다", "주민들이 모여 대화할 수 있는 '대화의 장'으로 운영한다", "민간기업에 위탁하여 수익을 창출한다", "학습기회 제공에만 집중한다"], "answer": 1, "explanation": "평생학습관은 프로그램 공간으로 한정하지 않고, 주민들이 모여 대화할 수 있는 '대화의 장'으로 운영해야 하며, 학습기회 제공보다 주민역량 향상이 더 중요합니다."}, {"q": "다음 사례와 지역을 잘못 짝지은 것은?", "options": ["사랑나누리 방과후 센터 - 경기도 이천시", "느티나무놀이터 - 대전시 서구 복수동", "안전안심마을 - 대전시 석교동", "장독대 마을 - 강원도 철원군"], "answer": 3, "explanation": "장독대 마을은 강원도 철원군이 아니라 경기도 포천시 관인면에 위치합니다."}, {"q": "다음 연도와 사례를 잘못 짝지은 것은?", "options": ["2004년 - 관악구 서울시 최초 평생학습도시 선정", "2006년 - 사랑나누리 방과후 센터 시작", "2012년 - 장독대 마을 형성", "2017년 - 느티나무놀이터 '모이자' 사업 선정"], "answer": 3, "explanation": "느티나무놀이터 '모이자' 사업 선정은 2016년 6월이고, 2017년은 꿈빛행복맘이 결성된 해입니다."}, {"q": "오늘날 지역교육 시스템에 대한 패러다임으로 가장 적절한 것은?", "options": ["학교교육에만 의존하는 일원적 시스템", "다양한 기관·단체가 연계해 통합 운영하는 새로운 패러다임", "민간 기업이 주도하는 시장형 시스템", "중앙정부가 모든 것을 결정하는 하향식 시스템"], "answer": 1, "explanation": "오늘날 지역은 학교교육에만 의존하지 않고 다양한 기관·단체가 연계해 통합 운영하는 새로운 패러다임의 교육 시스템이 필요합니다."}, {"q": "평생교육사가 연계의 장애요인을 극복하기 위해 제공해야 할 것은?", "options": ["대규모 예산을 투입한 연계 사업 지원 프로그램", "연계로 얻을 수 있는 이점을 체험·인식할 수 있는 소소한 경험 기회", "연계 비협조 기관에 대한 법적 제재와 강제 조치", "전국적으로 표준화된 연계 매뉴얼과 가이드라인"], "answer": 1, "explanation": "평생교육사의 과제는 연계로 얻을 수 있는 이점을 체험·인식할 수 있는 소소한 경험 기회를 제공하는 것입니다."}, {"q": "연계 주체를 '설립취지와 여건에 따른 교육사업 비중'으로 분류한 것은?", "options": ["공공기관(국가/지자체 설립) ↔ 민간기관(개인재산/기부금)", "교육 전용 시설 ↔ 일반 시설(예: 관공서)", "대도시 권역 시설 ↔ 농촌 권역 시설", "국가 직속 시설 ↔ 지자체 직속 시설"], "answer": 1, "explanation": "설립취지와 여건에 따른 교육사업 비중으로는 교육 전용 시설과 일반 시설(예: 관공서)로 구분됩니다."}, {"q": "연계 내용에 해당하지 않는 것은?", "options": ["인적·물적 자원의 교류·공유", "공동사업 제휴", "직원 공동연수", "경쟁입찰을 통한 독점적 수주"], "answer": 3, "explanation": "연계 내용은 인적·물적 자원, 학습정보의 교류·공유, 공동사업 제휴, 직원 공동연수 등입니다. 경쟁입찰 독점 수주는 연계의 취지와 반대됩니다."}, {"q": "연계 주체의 또 다른 정의로 가장 적절한 것은?", "options": ["오직 행정기관만을 의미한다", "연계 가능 자원 ↔ 연계 받고자 하는 자원", "민간단체만을 의미한다", "법인격 있는 기관만을 의미한다"], "answer": 1, "explanation": "연계 주체는 '연계 가능 자원'과 '연계 받고자 하는 자원'으로 이해할 수 있습니다."}, {"q": "사랑나누리 방과후 센터에서 학생회 학우들이 담당한 역할은?", "options": ["센터 운영 행정 관리자로 일함", "자원활동가로 방과 후 보충학습 지도", "운영비를 후원하는 재정 후원자 역할", "공간을 빌려주는 건물 임대인 역할"], "answer": 1, "explanation": "한국방송통신대학교 이천학생회 학우들은 자원활동가로 모집되어 방과 후 보충학습을 지도하였습니다."}, {"q": "사랑나누리 방과후 센터에서 이천시가 담당한 연계 역할은?", "options": ["오직 재정 지원만 담당", "시설 제공·강사 파견 등", "학생 직접 선발", "프로그램 직접 운영"], "answer": 1, "explanation": "이천시는 시설 제공과 강사 파견 등의 역할을 담당하였습니다."}, {"q": "관악구의 거점 교육기관에 해당하지 않는 것은?", "options": ["중앙사회복지관", "신림종합사회복지관", "YMCA 봉천종합사회복지관", "서울대학교 평생교육원"], "answer": 3, "explanation": "관악구 거점 교육기관은 중앙사회복지관, 신림종합사회복지관, YMCA 봉천종합사회복지관, 관악청소년회관, 한국산업블로그협회(강의록 표기) 등입니다."}, {"q": "관악구가 학습권역을 5개로 구획한 기준은?", "options": ["행정구역의 인구수", "지역특성 및 주민 학습요구", "중앙정부의 표준 가이드라인", "상권 규모"], "answer": 1, "explanation": "관악구는 지역특성 및 주민 학습요구에 따라 학습권역을 5개로 구획하였습니다."}, {"q": "지역연계를 위한 지역교육의 과제 중 '연계·협력의 비전에 대한 합의 도출'에서 강조되는 것은?", "options": ["관(官) 주도의 비전 수립과 일방적 통보", "민(民) 주도의 비전 수립, 합의 도출 워크숍", "외부 전문가의 단독 결정과 권고안 제시", "국제기구의 권고에 따른 표준 비전 수용"], "answer": 1, "explanation": "연계·협력 비전 도출은 민(民) 주도의 비전 수립과 합의 도출 워크숍을 통해 이루어져야 합니다."}, {"q": "'지역공동체 구축을 위한 지역교육' 과제의 핵심 원칙으로 옳지 않은 것은?", "options": ["생활권 중심", "학습권 보장", "주민 학습욕구·지역상황 반영", "전국 표준 일률 적용"], "answer": 3, "explanation": "지역공동체 구축을 위한 지역교육은 생활권 중심, 학습권 보장, 주민 학습욕구·지역상황 반영을 원칙으로 합니다. 전국 일률 적용은 원칙에 반합니다."}, {"q": "지역의 다양한 부문과의 연계에 해당하지 않는 것은?", "options": ["정치, 경제, 행정", "학문, 예술, 종교", "복지, 노동", "오직 학교교육 부문"], "answer": 3, "explanation": "지역의 다양한 부문은 정치, 경제, 행정, 학문, 예술, 종교, 복지, 노동 등 광범위하며, 학교교육에 한정되지 않습니다."}, {"q": "'연계의 공동경험 확보를 위한 주민참여 사업 기획 및 운영'의 마중물 효과로 가장 적절한 것은?", "options": ["행정 절차의 간소화와 빠른 의사결정 도출", "상호 이해 → 신뢰 구축 → 지역 연계 플랫폼 구축", "예산 절감과 비용 효율적 사업 운영", "사업 추진 속도 향상과 단기 성과 창출"], "answer": 1, "explanation": "이 과제는 상호 이해를 통한 신뢰 구축, 나아가 지역 연계 플랫폼 구축의 마중물 역할을 합니다."}, {"q": "'나로부터' 2단계에서 일반 서민의 핵심 고민이 '예산 확보'인 이유는?", "options": ["수익 극대화를 위한 사업 확장이 필요하기 때문", "시재(개인 주머니)를 털기 어렵기 때문에 예산 신청·확보가 중요", "정부 보조금 신청이 법적으로 의무화되어 있기 때문", "법적으로 예산 신청 절차가 강제되어 있기 때문"], "answer": 1, "explanation": "시재(개인 주머니)를 털기 어려운 일반 서민의 경우, 예산 신청·확보가 핵심 고민이 됩니다."}, {"q": "공적 모임에서 '타인에 대한 배려'의 의미로 가장 적절한 것은?", "options": ["타인이 손해 보지 않을 뿐 아니라, 타인에게도 이익이 가도록 일을 추진하는 것", "오직 우리 모임의 이익을 극대화하기 위해 추구하는 것", "외부 단체와의 모든 접촉을 차단하고 폐쇄적으로 운영하는 것", "타인의 의견에 무조건 따르며 자기 주장을 포기하는 것"], "answer": 0, "explanation": "공적 모임에서 타인에 대한 배려란 타인이 손해 보지 않을 뿐 아니라, 타인에게도 이익이 가도록 일을 추진하는 것을 의미합니다."}, {"q": "느티나무놀이터 모임에서 발생한 갈등 요인으로 가장 적절한 것은?", "options": ["엄마들 사이의 학력 차이로 인한 소통 어려움", "가정마다 장난감·간식거리 차이로 인한 아이들의 부러움·다툼", "놀이터 시설의 위생 문제로 인한 부모들의 불만", "육아 방식의 충돌로 인한 엄마들 간 가치관 차이"], "answer": 1, "explanation": "가정마다 장난감·간식거리 차이로 아이들의 부러움·다툼이 생기면서 엄마들 사이 내적 갈등 가능성이 발생하였습니다."}, {"q": "빛나리신계 모임이 관심을 가진 '환경'의 범위는?", "options": ["자연환경에 한정", "사회환경에 한정", "자연환경 + 사회환경 모두", "경제환경에 한정"], "answer": 2, "explanation": "빛나리신계는 자연환경과 사회환경을 모두 포함한 환경 문제에 관심을 가졌습니다."}, {"q": "꿈빛행복맘이 결성된 해는?", "options": ["2014년", "2015년", "2016년", "2017년"], "answer": 3, "explanation": "꿈빛행복맘은 2017년 두 모임이 의기투합하여 결성되었습니다."}, {"q": "석교동 안전안심마을의 핵심 참여 주체에 해당하지 않는 것은?", "options": ["가장 취약한 초등학생", "초등학생들의 불안 대상이었던 청소년(중·고등 형들)", "지구대와 자율방범대", "외국인 노동자 단체"], "answer": 3, "explanation": "참여 주체는 초등학생, 청소년, 불특정 다수 주민, 지구대, 자율방범대 등 약 50여 명입니다."}, {"q": "석교동 안전안심마을 '안전마을가게 협약'의 핵심 기능은?", "options": ["가게 이용 주민에게 할인 쿠폰을 제공하는 역할", "가게 운영자들의 시야를 활용한 신고·알림 역할", "가게에서 무료 음료를 제공하는 휴게 역할", "가게 주변 청소 봉사를 약속하는 환경 역할"], "answer": 1, "explanation": "안전마을가게 협약은 가게 운영자들의 시야를 활용해 신고·알림 역할을 하도록 하는 것입니다."}, {"q": "석교동 안전안심마을의 조사·결과 활용 흐름에서 가장 마지막에 얻은 것은?", "options": ["조사 결과를 행정기관에 건의서로 제출함", "주민 요청에 따른 가로등 설치 완료", "'논의해서 건의하니까 되더라'는 성공 체험", "조사결과를 마을주민과 공유하고 회의 개최"], "answer": 2, "explanation": "흐름의 마지막은 '논의해서 건의하니까 되더라'는 성공 체험으로, 이것이 주민 역량 강화의 핵심입니다."}, {"q": "'수다'에서 외부로부터 오는 문제를 다루는 순서로 옳은 것은?", "options": ["문제 해결 동력 확보 → 공론화 → 문제 자각", "문제 자각 → 공론화 → 문제 해결 동력 확보", "공론화 → 문제 자각 → 문제 해결 동력 확보", "문제 자각 → 문제 해결 동력 확보 → 공론화"], "answer": 1, "explanation": "수다의 기능은 외부로부터 오는 문제 자각 → 공론화 → 문제 해결 동력 확보 순으로 작동합니다."}, {"q": "회의를 통한 학습의 효과로 옳은 것은?", "options": ["민주적 의사결정 훈련 + 조직적 역량 향상", "참여자 간 경쟁심 강화와 성과 향상", "개인의 지식 축적과 학습 이력 확대", "행정 효율 증대와 의사결정 속도 향상"], "answer": 0, "explanation": "회의를 통한 학습의 효과는 민주적 의사결정 훈련과 조직적 역량 향상입니다."}, {"q": "개별 불만·불평을 사회적 의제로 만들지 못할 때의 위험으로 가장 적절한 것은?", "options": ["주민 참여율이 점차 감소하는 위험", "권력·완력 사용 가능성 → 민주적이지 않은 방식", "사업 추진 비용이 증가하는 위험", "의사결정 속도가 저하되는 위험"], "answer": 1, "explanation": "개별 불만·불평은 그대로는 문제 해결로 가지 못하고, 권력·완력 사용 가능성이 생겨 민주적이지 않은 방식으로 흐를 수 있습니다."}, {"q": "조사에 참여한 마을주민이 성장하는 모습으로 옳은 것은?", "options": ["행정기관 공무원으로 임용되어 활동함", "마을을 이야기할 줄 아는 '마을활동가'로 성장", "지역 연구를 전문으로 하는 학자로 변신", "전문 강사 자격을 취득하여 강의자로 데뷔"], "answer": 1, "explanation": "조사에 참여한 마을주민은 마을을 이야기할 줄 아는 '마을활동가'로 성장합니다."}, {"q": "한 모임 안의 말걸기에서 본 안건으로 가는 진행 방식은?", "options": ["국기에 대한 경례 식의 격식 있는 도입", "날씨 얘기·주변 얘기에서 본 안건으로 점진적 진행", "즉시 본 안건으로 직진", "의장의 일방 선언"], "answer": 1, "explanation": "날씨 얘기·주변 얘기에서 점진적으로 본 안건으로 진행하며, '국기에 대한 경례' 식은 아닙니다."}, {"q": "석교동 사례의 '시작 = 조사' 이후 공유 방식으로 옳은 것은?", "options": ["언론 보도자료 배포", "학습회 또는 워크숍", "SNS 게시", "공청회 강제 소집"], "answer": 1, "explanation": "조사 내용 정리 후 마을사람들과의 공유는 학습회 또는 워크숍 형태로 이루어집니다."}, {"q": "사회적 각성의 의미로 가장 적절한 것은?", "options": ["사회 현실에 대한 비판 의식을 강하게 표출하는 것", "'개인 단위로 해결 불가, 사회적 단위에서 해결해야 효과적·효율적'이라는 깨달음", "개인의 권리 의식과 자율성을 강화하는 인식 변화", "사회 문제에 대해 무관심을 선언하는 태도 변화"], "answer": 1, "explanation": "사회적 각성은 '개인 단위로 해결 불가, 사회적 단위에서 해결해야 효과적·효율적'이라는 깨달음입니다."}, {"q": "바람직한 지역 리더의 모습으로 옳지 않은 것은?", "options": ["삶의 리더이면서 자기주도적 삶 역량을 보유한 사람", "지역을 함께 운영해 나가는 협력적 리더의 모습", "자기주도적 삶 역량을 갖춘 학습형 리더의 모습", "'사공이 많으면 산으로 간다' 식의 자기주장형 리더"], "answer": 3, "explanation": "바람직한 리더는 삶의 리더이면서 지역을 함께 운영하는 리더, 자기주도적 삶 역량 보유자입니다. 자기주장형 리더는 바람직하지 않습니다."}, {"q": "평생교육사의 아카이빙에서의 역할로 가장 적절한 것은?", "options": ["반드시 관청 소속이어야 활동이 가능한 공무원 역할", "관청 소속이 아니더라도 지역 활동 평생교육사가 현장 기록의 연구자·지원자 역할", "행정 업무를 보조하는 단순 사무 지원 역할에 한정", "강의 진행만을 전담하는 강사로서의 역할에 한정"], "answer": 1, "explanation": "평생교육사는 현장 기록의 연구자·지원자 역할을 하며, 관청 소속이 아니더라도 지역 활동 평생교육사가 지원자로 기록 가능합니다."}, {"q": "퍼실리테이터의 실제 사례로 옳게 짝지어진 것은?", "options": ["복수동의 멘토 - 꿈빛행복맘 결성 촉진 / 석교동 활동가 - 안전안심마을 논의 촉진", "복수동의 멘토 - 안전안심마을 촉진 / 석교동 활동가 - 꿈빛행복맘 결성", "두 사례 모두 동일한 사람이 진행", "두 사례는 서로 무관함"], "answer": 0, "explanation": "복수동의 멘토는 느티나무놀이터+빛나리신계의 꿈빛행복맘 결성을 촉진했고, 석교동의 활동가는 안전안심마을 논의를 촉진했습니다."}, {"q": "평생학습관이 확보·공급해야 할 공간 형태로 가장 적절한 것은?", "options": ["오직 평생학습관 자체 시설만을 활용하여 운영", "지역의 다양한 민간공공공간을 '학습공유공간'으로 확보·공급", "민간 카페와 같은 상업공간만을 학습 장소로 활용", "지역 상업시설을 유료로 임대하여 공간을 마련"], "answer": 1, "explanation": "평생학습관은 지역의 다양한 민간공공공간을 '학습공유공간'으로 확보·공급해야 합니다."}, {"q": "평생학습관 운영의 우선순위로 가장 적절한 것은?", "options": ["학습기회 제공의 양적 확대를 가장 우선시함", "스스로 성장을 꾀하는 학습을 기획할 줄 아는 주민역량 향상이 학습기회 제공보다 중요", "주민에게 제공되는 강의 횟수를 늘리는 것을 최우선", "수료증 발급과 학습 이력 인증 확대를 가장 우선시함"], "answer": 1, "explanation": "학습기회 제공보다 스스로 성장을 꾀하는 학습을 기획할 줄 아는 주민역량 향상이 더 중요합니다."}, {"q": "6강과 8강의 지역교육 과제 개수를 옳게 짝지은 것은?", "options": ["6강: 3가지 / 8강: 7가지", "6강: 7가지 / 8강: 3가지", "6강: 5가지 / 8강: 5가지", "6강: 10가지 / 8강: 2가지"], "answer": 1, "explanation": "6강 지역교육 과제는 7가지이며, 8강 주민참여 활성화 과제는 3가지입니다."}, {"q": "마을 단위 주민참여 기록의 수집 주체로 가장 적절한 것은?", "options": ["개인 자원봉사자", "시 차원(기초자치단체 차원)", "중앙정부 단독", "민간 기업"], "answer": 1, "explanation": "마을 단위 주민참여 기록은 개인이 못 하므로 시 차원(기초자치단체 차원)에서 수집해야 합니다."}, {"q": "퍼실리테이터의 본질적 역할로 가장 적절한 것은?", "options": ["사업을 직접 진두지휘하며 결정을 내리는 리더 역할", "직접 무언가를 하는 게 아니라 주민들이 하도록 '지원'하는 역량 보유", "조직의 리더로서 결정권을 행사하는 책임자 역할", "결과를 채점하고 평가하는 평가자로서의 역할"], "answer": 1, "explanation": "퍼실리테이터는 직접 무언가를 하는 게 아니라 주민들이 하도록 '지원'하는 역량을 가진 사람입니다."}];
+const QUIZ_SIZE = 15;
+
+// Fisher-Yates shuffle
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// 문제 선정 + 각 문제의 보기도 셔플 (정답 위치 랜덤화)
+function prepareQuiz() {
+  const picked = shuffle(ALL_QUESTIONS).slice(0, QUIZ_SIZE);
+  return picked.map(q => {
+    const optsWithIdx = q.options.map((opt, i) => ({ opt, isAnswer: i === q.answer }));
+    const shuffled = shuffle(optsWithIdx);
+    const newAnswer = shuffled.findIndex(x => x.isAnswer);
+    return {
+      q: q.q,
+      options: shuffled.map(x => x.opt),
+      answer: newAnswer,
+      explanation: q.explanation
+    };
+  });
+}
+
+let state = { quiz: [], idx: 0, answers: [], started: false };
+const main = document.getElementById('main');
+const labels = ['A', 'B', 'C', 'D', 'E'];
+
+function renderStart() {
+  document.getElementById('progressWrap').style.display = 'none';
+  document.getElementById('scoreTracker').style.display = 'none';
+  main.innerHTML = `
+    <div class="card start-screen">
+      <h2>📚 시험 대비 모드</h2>
+      <p>출석대체시험 대비 랜덤 퀴즈</p>
+      <div class="start-info">
+        <strong>📌 출제 방식</strong><br>
+        · 전체 101문제 중 <strong>15문제</strong> 무작위 출제<br>
+        · 매번 다른 문제, 보기 순서도 매번 달라요<br>
+        · 답 선택 시 즉시 정답/해설 확인<br>
+        · 마지막에 점수와 틀린 문제 다시 보기
+      </div>
+      <div class="controls" style="max-width: 280px; margin: 0 auto;">
+        <button class="btn btn-primary" id="startBtn">시작하기</button>
+      </div>
+    </div>
+  `;
+  document.getElementById('startBtn').addEventListener('click', startQuiz);
+}
+
+function startQuiz() {
+  state.quiz = prepareQuiz();
+  state.idx = 0;
+  state.answers = [];
+  state.started = true;
+  document.getElementById('progressWrap').style.display = 'flex';
+  document.getElementById('scoreTracker').style.display = 'flex';
+  updateProgress();
+  renderQuestion();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function updateProgress() {
+  const total = state.quiz.length;
+  const done = state.answers.filter(a => a !== undefined).length;
+  document.getElementById('progressFill').style.width = `${(done/total)*100}%`;
+  document.getElementById('progressText').textContent = `${done} / ${total}`;
+  const correctNum = state.answers.filter((a, i) => a !== undefined && a === state.quiz[i].answer).length;
+  const wrongNum = state.answers.filter((a, i) => a !== undefined && a !== state.quiz[i].answer).length;
+  document.getElementById('correctCount').textContent = correctNum;
+  document.getElementById('wrongCount').textContent = wrongNum;
+}
+
+function renderQuestion() {
+  const q = state.quiz[state.idx];
+  const total = state.quiz.length;
+  const answered = state.answers[state.idx];
+  const isCorrect = answered === q.answer;
+
+  main.innerHTML = `
+    ${answered !== undefined ? `
+      <div class="feedback-banner ${isCorrect ? 'correct' : 'wrong'}">
+        ${isCorrect ? '🎉 맞았어요!' : '❌ 틀렸어요'}
+      </div>
+    ` : ''}
+    <div class="card">
+      <div class="q-num">문제 ${state.idx + 1} / ${total}</div>
+      <div class="question">${q.q}</div>
+      <div class="options">
+        ${q.options.map((opt, i) => {
+          let cls = 'option';
+          if (answered !== undefined) {
+            if (i === q.answer) cls += ' correct';
+            else if (i === answered) cls += ' wrong';
+          }
+          return `<button class="${cls}" data-idx="${i}" ${answered !== undefined ? 'disabled' : ''}>
+            <span class="option-label">${labels[i]}</span>
+            <span class="option-text">${opt}</span>
+          </button>`;
+        }).join('')}
+      </div>
+      ${answered !== undefined && q.explanation ? `
+        <div class="explanation"><strong>해설</strong>${q.explanation}</div>
+      ` : ''}
+      <div class="controls">
+        ${state.idx > 0 ? '<button class="btn btn-secondary" id="prevBtn">이전</button>' : ''}
+        ${answered !== undefined ? (
+          state.idx < total - 1
+            ? '<button class="btn btn-primary" id="nextBtn">다음 문제</button>'
+            : '<button class="btn btn-primary" id="finishBtn">결과 보기</button>'
+        ) : ''}
+      </div>
+    </div>
+  `;
+
+  main.querySelectorAll('.option:not(:disabled)').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const choice = parseInt(btn.dataset.idx);
+      state.answers[state.idx] = choice;
+      updateProgress();
+      renderQuestion();
+    });
+  });
+  document.getElementById('prevBtn')?.addEventListener('click', () => { state.idx--; renderQuestion(); window.scrollTo({top:0, behavior:'smooth'}); });
+  document.getElementById('nextBtn')?.addEventListener('click', () => { state.idx++; renderQuestion(); window.scrollTo({top:0, behavior:'smooth'}); });
+  document.getElementById('finishBtn')?.addEventListener('click', renderResult);
+}
+
+function renderResult() {
+  const total = state.quiz.length;
+  const correct = state.answers.filter((a, i) => a === state.quiz[i].answer).length;
+  const wrong = total - correct;
+  const pct = Math.round((correct/total)*100);
+  let msg = '훌륭해요! 시험 준비 잘 되셨네요';
+  if (pct < 60) msg = '핵심 포인트 다시 한번 복습해볼까요?';
+  else if (pct < 80) msg = '거의 다 왔어요! 헷갈리는 부분만 보완하세요';
+  else if (pct < 95) msg = '아주 좋아요! 디테일만 한번 더 점검해보세요';
+
+  main.innerHTML = `
+    <div class="card result">
+      <div class="result-score">${correct}<span>/${total}</span></div>
+      <div class="result-text">정답률 ${pct}% · ${msg}</div>
+      <div class="result-stats">
+        <div class="result-stat">
+          <div class="result-stat-num correct-num">${correct}</div>
+          <div class="result-stat-label">맞은 문제</div>
+        </div>
+        <div class="result-stat">
+          <div class="result-stat-num wrong-num">${wrong}</div>
+          <div class="result-stat-label">틀린 문제</div>
+        </div>
+      </div>
+      <div class="controls" style="max-width: 320px; margin: 0 auto; gap: 8px;">
+        <button class="btn btn-primary" id="retryBtn">새 문제 다시 풀기</button>
+      </div>
+      ${wrong > 0 ? `
+        <div class="review">
+          <h2>틀린 문제 다시 보기</h2>
+          ${state.quiz.map((q, i) => {
+            const ok = state.answers[i] === q.answer;
+            if (ok) return '';
+            return `<div class="review-item">
+              <div class="rq">${i+1}. ${q.q}</div>
+              <div class="ra">정답: ${labels[q.answer]}. ${q.options[q.answer]}</div>
+            </div>`;
+          }).join('')}
+        </div>
+      ` : `<div style="margin-top: 24px; color: var(--correct-strong); font-size: 14px; font-weight: 600;">🎉 전부 맞히셨어요!</div>`}
+    </div>
+  `;
+  document.getElementById('retryBtn').addEventListener('click', () => {
+    startQuiz();
+  });
+  document.getElementById('progressFill').style.width = '100%';
+  document.getElementById('progressText').textContent = `${total} / ${total}`;
+}
+
+renderStart();
+</script>
+</body>
+</html>
