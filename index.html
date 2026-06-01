@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>2026-1학기 기말 모의시험</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  :root {
+    --bg: #FAF7F2; --ink: #1A1A1A; --muted: #6B6B6B; --card: #FFFFFF;
+    --border: #E8E2D5; --accent: #2E5C4F; --accent-soft: #E8F0EC;
+    --shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.04);
+    --shadow-hover: 0 2px 6px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.06);
+  }
+  html, body { background: var(--bg); color: var(--ink); font-family: 'IBM Plex Sans KR', sans-serif; -webkit-font-smoothing: antialiased; min-height: 100vh; overscroll-behavior-y: contain; }
+  body {
+    background-image:
+      radial-gradient(circle at 10% 0%, rgba(46,92,79,0.04) 0%, transparent 40%),
+      radial-gradient(circle at 90% 100%, rgba(220,38,38,0.03) 0%, transparent 40%);
+  }
+  .app { max-width: 560px; margin: 0 auto; padding: 32px 20px 60px; }
+
+  header { margin-bottom: 28px; text-align: center; }
+  .eyebrow {
+    font-family: 'Gowun Dodum', serif;
+    color: var(--accent);
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  h1 {
+    font-family: 'Gowun Dodum', serif;
+    font-size: 28px;
+    font-weight: 400;
+    line-height: 1.3;
+    margin-bottom: 8px;
+  }
+  .subtitle {
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .stats-bar {
+    display: flex;
+    gap: 8px;
+    margin: 20px 0 28px;
+    justify-content: center;
+  }
+  .stat-pill {
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .stat-pill strong {
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .subject-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .subject-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    transition: all 0.2s ease;
+    position: relative;
+  }
+  .subject-card.active { cursor: pointer; }
+  .subject-card.active:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover);
+    border-color: var(--accent);
+  }
+  .subject-card.active:active {
+    transform: scale(0.99);
+  }
+  .subject-card.coming-soon {
+    cursor: default;
+    opacity: 0.55;
+  }
+
+  .subject-num {
+    font-family: 'Gowun Dodum', serif;
+    font-size: 28px;
+    font-weight: 400;
+    color: var(--accent);
+    line-height: 1;
+    flex-shrink: 0;
+    min-width: 56px;
+  }
+  .subject-content {
+    flex: 1;
+    min-width: 0;
+  }
+  .subject-name {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: var(--ink);
+    word-break: keep-all;
+  }
+  .subject-meta {
+    font-size: 12.5px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  .subject-arrow {
+    color: var(--accent);
+    font-size: 20px;
+    flex-shrink: 0;
+    font-weight: 300;
+    transition: transform 0.2s ease;
+  }
+  .subject-card.active:hover .subject-arrow {
+    transform: translateX(4px);
+  }
+  .subject-card.coming-soon .subject-arrow {
+    display: none;
+  }
+
+  .badge {
+    display: inline-block;
+    font-size: 10.5px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+  .badge-ready {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+  .badge-soon {
+    background: #F5F1E8;
+    color: var(--muted);
+  }
+
+  footer {
+    text-align: center;
+    margin-top: 40px;
+    font-size: 12px;
+    color: var(--muted);
+    font-family: 'Gowun Dodum', serif;
+    line-height: 1.6;
+  }
+  footer .tip {
+    margin-top: 8px;
+    padding: 12px 16px;
+    background: var(--accent-soft);
+    border-radius: 10px;
+    font-size: 12px;
+    color: var(--ink);
+    font-family: 'IBM Plex Sans KR', sans-serif;
+    line-height: 1.6;
+  }
+  footer .tip strong { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="eyebrow">2026 · 1학기 기말</div>
+    <h1>모의시험 모음</h1>
+  </header>
+
+  <main class="subject-list">
+
+    <a href="202601.html" class="subject-card active">
+      <div class="subject-num">01</div>
+      <div class="subject-content">
+        <div class="subject-name">평생교육방법론</div>
+        <div class="subject-meta">모의시험 풀어보기</div>
+      </div>
+      <div class="subject-arrow">→</div>
+    </a>
+
+    <a href="202602.html" class="subject-card active">
+      <div class="subject-num">02</div>
+      <div class="subject-content">
+        <div class="subject-name">평생교육론</div>
+        <div class="subject-meta">모의시험 풀어보기</div>
+      </div>
+      <div class="subject-arrow">→</div>
+    </a>
+
+    <a href="202603.html" class="subject-card active">
+      <div class="subject-num">03</div>
+      <div class="subject-content">
+        <div class="subject-name">노인교육론</div>
+        <div class="subject-meta">모의시험 풀어보기</div>
+      </div>
+      <div class="subject-arrow">→</div>
+    </a>
+
+    <a href="202604.html" class="subject-card active">
+      <div class="subject-num">04</div>
+      <div class="subject-content">
+        <div class="subject-name">지역사회교육론</div>
+        <div class="subject-meta">모의시험 풀어보기</div>
+      </div>
+      <div class="subject-arrow">→</div>
+    </a>
+
+    <a href="202605.html" class="subject-card active">
+      <div class="subject-num">05</div>
+      <div class="subject-content">
+        <div class="subject-name">성인학습 및 상담</div>
+        <div class="subject-meta">모의시험 풀어보기</div>
+      </div>
+      <div class="subject-arrow">→</div>
+    </a>
+
+    <a href="202606.html" class="subject-card active">
+      <div class="subject-num">06</div>
+      <div class="subject-content">
+        <div class="subject-name">교육공학</div>
+        <div class="subject-meta">모의시험 풀어보기</div>
+      </div>
+      <div class="subject-arrow">→</div>
+    </a>
+
+  </main>
+
+  <footer>
+    made with ripo · 시험 대비 학습 도구
+    <div class="tip">
+      💡 <strong>홈화면 추가</strong>해두면 앱처럼 빠르게 접근할 수 있어요.<br>
+      Safari 하단 공유 → "홈 화면에 추가"
+    </div>
+  </footer>
+</div>
+</body>
+</html>
