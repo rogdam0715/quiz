@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>교육공학 1~15강 + 기출 랜덤 퀴즈</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  :root {
+    --bg: #FAF7F2; --ink: #1A1A1A; --muted: #6B6B6B; --card: #FFFFFF;
+    --border: #E8E2D5; --accent: #2E5C4F; --accent-soft: #E8F0EC;
+    --correct: #16A34A; --correct-soft: #DCFCE7; --correct-strong: #15803D;
+    --wrong: #DC2626; --wrong-soft: #FEE2E2; --wrong-strong: #B91C1C;
+    --shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.04);
+  }
+  html, body { background: var(--bg); color: var(--ink); font-family: 'IBM Plex Sans KR', sans-serif; -webkit-font-smoothing: antialiased; min-height: 100vh; overscroll-behavior-y: contain; }
+  body { background-image: radial-gradient(circle at 10% 0%, rgba(46,92,79,0.04) 0%, transparent 40%), radial-gradient(circle at 90% 100%, rgba(220,38,38,0.03) 0%, transparent 40%); }
+  .app { max-width: 560px; margin: 0 auto; padding: 24px 20px 40px; }
+  header { margin-bottom: 24px; }
+  .eyebrow { font-family: 'Gowun Dodum', serif; color: var(--accent); font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 6px; }
+  h1 { font-family: 'Gowun Dodum', serif; font-size: 24px; font-weight: 400; line-height: 1.3; margin-bottom: 8px; }
+  .subtitle { color: var(--muted); font-size: 14px; }
+  .progress-wrap { margin-top: 20px; display: flex; align-items: center; gap: 12px; }
+  .progress-bar { flex: 1; height: 6px; background: var(--border); border-radius: 999px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--accent); border-radius: 999px; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); width: 0%; }
+  .progress-text { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; min-width: 56px; text-align: right; }
+  .score-tracker { display: flex; gap: 8px; margin-top: 12px; font-size: 12px; color: var(--muted); }
+  .score-pill { padding: 4px 10px; border-radius: 999px; background: var(--card); border: 1px solid var(--border); font-weight: 600; }
+  .score-pill.correct-pill { color: var(--correct-strong); border-color: var(--correct); }
+  .score-pill.wrong-pill { color: var(--wrong-strong); border-color: var(--wrong); }
+  .feedback-banner { margin-bottom: 16px; padding: 14px 18px; border-radius: 12px; font-weight: 700; font-size: 16px; text-align: center; animation: slideIn 0.3s ease-out; letter-spacing: 0.02em; }
+  @keyframes slideIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+  .feedback-banner.correct { background: var(--correct); color: white; }
+  .feedback-banner.wrong { background: var(--wrong); color: white; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 24px 20px; box-shadow: var(--shadow); animation: fadeIn 0.35s ease-out; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .q-num { font-family: 'Gowun Dodum', serif; color: var(--accent); font-size: 13px; letter-spacing: 0.05em; margin-bottom: 12px; }
+  .question { font-size: 16px; font-weight: 500; line-height: 1.55; margin-bottom: 20px; word-break: keep-all; }
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .option { display: flex; align-items: flex-start; gap: 12px; padding: 14px 16px; background: var(--bg); border: 1.5px solid var(--border); border-radius: 12px; cursor: pointer; font-family: inherit; font-size: 14.5px; line-height: 1.5; text-align: left; width: 100%; color: var(--ink); transition: all 0.15s ease; word-break: keep-all; position: relative; }
+  .option:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-soft); }
+  .option:active:not(:disabled) { transform: scale(0.99); }
+  .option:disabled { cursor: default; }
+  .option-label { flex-shrink: 0; width: 24px; height: 24px; border-radius: 50%; background: var(--card); border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: var(--muted); transition: all 0.15s ease; }
+  .option-text { flex: 1; }
+  .option.correct { background: var(--correct-soft); border-color: var(--correct); border-width: 2.5px; color: var(--correct-strong); font-weight: 600; }
+  .option.correct .option-label { background: var(--correct); border-color: var(--correct); color: white; }
+  .option.correct .option-text { padding-right: 56px; }
+  .option.correct::after { content: '✓ 정답'; position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: var(--correct); color: white; font-size: 11px; font-weight: 700; padding: 4px 9px; border-radius: 6px; letter-spacing: 0.02em; }
+  .option.wrong { background: var(--wrong-soft); border-color: var(--wrong); border-width: 2.5px; color: var(--wrong-strong); font-weight: 600; }
+  .option.wrong .option-label { background: var(--wrong); border-color: var(--wrong); color: white; }
+  .option.wrong .option-text { padding-right: 56px; }
+  .option.wrong::after { content: '✗ 오답'; position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: var(--wrong); color: white; font-size: 11px; font-weight: 700; padding: 4px 9px; border-radius: 6px; letter-spacing: 0.02em; }
+  .explanation { margin-top: 16px; padding: 14px 16px; background: var(--accent-soft); border-left: 3px solid var(--accent); border-radius: 8px; font-size: 13.5px; line-height: 1.6; color: var(--ink); animation: fadeIn 0.3s ease-out; }
+  .explanation strong { color: var(--accent); display: block; margin-bottom: 4px; font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase; }
+  .controls { margin-top: 20px; display: flex; gap: 10px; }
+  .btn { flex: 1; padding: 14px 20px; border: none; border-radius: 12px; font-family: inherit; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.15s ease; }
+  .btn-primary { background: var(--ink); color: white; }
+  .btn-primary:hover { background: #000; }
+  .btn-primary:active { transform: scale(0.98); }
+  .btn-secondary { background: transparent; color: var(--muted); border: 1.5px solid var(--border); }
+  .btn-secondary:hover { border-color: var(--ink); color: var(--ink); }
+  .start-screen { text-align: center; padding: 40px 20px; }
+  .start-screen h2 { font-family: 'Gowun Dodum', serif; font-weight: 400; font-size: 22px; margin-bottom: 12px; }
+  .start-screen p { color: var(--muted); font-size: 14px; line-height: 1.6; margin-bottom: 24px; }
+  .start-info { background: var(--accent-soft); border-radius: 12px; padding: 16px; margin-bottom: 20px; font-size: 13.5px; line-height: 1.6; color: var(--ink); text-align: left; }
+  .start-info strong { color: var(--accent); }
+  .result { text-align: center; padding: 32px 20px; }
+  .result-score { font-family: 'Gowun Dodum', serif; font-size: 64px; font-weight: 400; color: var(--accent); line-height: 1; margin-bottom: 8px; }
+  .result-score span { font-size: 32px; color: var(--muted); }
+  .result-text { font-size: 16px; color: var(--muted); margin-bottom: 16px; }
+  .result-stats { display: flex; justify-content: center; gap: 24px; margin-bottom: 28px; padding: 16px; background: var(--bg); border-radius: 12px; border: 1px solid var(--border); }
+  .result-stat { text-align: center; }
+  .result-stat-num { font-family: 'Gowun Dodum', serif; font-size: 32px; font-weight: 400; line-height: 1; margin-bottom: 4px; }
+  .result-stat-num.correct-num { color: var(--correct-strong); }
+  .result-stat-num.wrong-num { color: var(--wrong-strong); }
+  .result-stat-label { font-size: 12px; color: var(--muted); letter-spacing: 0.05em; }
+  .review { text-align: left; margin-top: 24px; border-top: 1px solid var(--border); padding-top: 20px; }
+  .review h2 { font-family: 'Gowun Dodum', serif; font-weight: 400; font-size: 18px; margin-bottom: 12px; }
+  .review-item { padding: 12px 14px; border-radius: 10px; margin-bottom: 8px; font-size: 13.5px; line-height: 1.5; background: var(--bg); border: 1px solid var(--border); border-left: 3px solid var(--wrong); }
+  .review-item .rq { font-weight: 500; margin-bottom: 4px; }
+  .review-item .ra { color: var(--muted); font-size: 13px; }
+  footer { text-align: center; margin-top: 32px; font-size: 12px; color: var(--muted); font-family: 'Gowun Dodum', serif; }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="eyebrow">교육공학</div>
+    <h1 id="title">1~15강 + 기출 기말 대비 퀴즈</h1>
+    <div class="subtitle" id="subtitle">요점정리+기출 총 142문제 중 무작위 20문제 출제</div>
+    <div class="progress-wrap" id="progressWrap" style="display:none;">
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-text" id="progressText">0 / 20</div>
+    </div>
+    <div class="score-tracker" id="scoreTracker" style="display:none;">
+      <div class="score-pill correct-pill">✓ <span id="correctCount">0</span></div>
+      <div class="score-pill wrong-pill">✗ <span id="wrongCount">0</span></div>
+    </div>
+  </header>
+  <main id="main"></main>
+  <footer>made with ripo · 학습 퀴즈</footer>
+</div>
+
+<script>
+const ALL_QUESTIONS = [{"q": "AECT 2008년 교육공학 정의에서 새롭게 강조된 두 가지 핵심 키워드는?", "options": ["수행 향상과 윤리적 실천", "인적 자원과 비인적 자원", "이론과 실천", "과정과 자원"], "answer": 0, "explanation": "2008년 정의는 '학습 촉진과 수행 향상을 위한 연구와 윤리적 실천'으로, 수행 향상과 윤리적 실천이 새롭게 강조되었습니다."}, {"q": "\"공학은 실제적 문제를 해결하기 위해 과학적 지식 또는 조직화된 지식을 체계적으로 적용하는 것\"이라고 '공학'을 정의한 인물은?", "options": ["갤브레이스(Galbraith)", "하이니히(Heinich)", "앨런(Allen)", "코즈마(Kozma)"], "answer": 0, "explanation": "갤브레이스(Galbraith)는 공학을 실제적 문제 해결을 위해 과학적·조직화된 지식을 체계적으로 적용하는 것으로 정의했습니다."}, {"q": "AECT 1994년 정의의 5대 영역에 해당하지 않는 것은?", "options": ["설계", "개발", "활용", "연구"], "answer": 3, "explanation": "1994년 정의의 5대 영역은 설계·개발·활용·관리·평가입니다. '연구'는 포함되지 않습니다."}, {"q": "교육공학 5대 영역 중 '메시지 설계, 교수체제설계, 교수전략, 학습자 특성'을 하위 요소로 갖는 영역은?", "options": ["설계", "개발", "활용", "관리"], "answer": 0, "explanation": "설계 영역은 전체 수업 과정과 구체적 학습 경험을 계획하며, 메시지 설계·교수체제설계·교수전략·학습자 특성을 하위 요소로 합니다."}, {"q": "교육공학 5대 영역 중 '인쇄 기술, 시청각 기술, 컴퓨터기반 기술, 통합 기술'을 하위 요소로 갖는 영역은?", "options": ["설계", "개발", "활용", "평가"], "answer": 1, "explanation": "개발 영역은 교수매체·교육용 자료·교육 프로그램을 실제로 제작하는 영역으로, 인쇄·시청각·컴퓨터기반·통합 기술을 포함합니다."}, {"q": "교육공학 5대 영역 중 '매체 활용, 혁신의 보급, 실행과 제도화, 정책과 규제'를 하위 요소로 갖는 영역은?", "options": ["활용", "관리", "평가", "개발"], "answer": 0, "explanation": "활용 영역은 개발된 자료를 확산시키고 효과적 활용을 안내하는 영역입니다."}, {"q": "교육공학 5대 영역 중 '자원 관리, 전달체제 관리, 정보 관리, 프로젝트 관리'를 하위 요소로 갖는 영역은?", "options": ["관리", "평가", "설계", "활용"], "answer": 0, "explanation": "관리 영역은 교육공학의 과정과 자원을 운영·감독·조정하는 영역입니다."}, {"q": "교육공학 5대 영역 중 '형성 평가, 총괄 평가, 준거지향 평가, 문제 분석'을 하위 요소로 갖는 영역은?", "options": ["평가", "관리", "개발", "설계"], "answer": 0, "explanation": "평가 영역은 교육공학의 과정 및 결과물이 적절한지를 검토하는 영역입니다."}, {"q": "미국에서 전국교육연합회 산하에 '시각교육국'이 설립된 시기는?", "options": ["1900년대", "1920년대", "1950년대", "1970년대"], "answer": 1, "explanation": "1920년대에 시각수업 정기간행물이 발간되고 전국교육연합회 산하 '시각교육국'이 설립되었습니다."}, {"q": "교육에 '체제(system)' 개념이 도입되고 행동주의 기반 '프로그램 수업'과 '교수기계'가 개발된 시기는?", "options": ["1930년대", "1950년대", "1960년대", "1990년대"], "answer": 2, "explanation": "1960년대에 교육에 체제 개념이 도입되고 행동주의에 기반한 프로그램 수업·교수기계가 개발되었습니다."}, {"q": "미국에서 '시청각교육국'이 '교육공학회'로 개편되고 '교수공학(instructional technology)' 용어가 사용되기 시작한 시기는?", "options": ["1950년대", "1960년대", "1970년대", "1990년대"], "answer": 2, "explanation": "1970년대에 시청각교육국이 교육공학회로 개편되고 '교수공학' 용어가 사용되었습니다."}, {"q": "1960년 커뮤니케이션 모형을 통해 교수자·학습자를 강조하고 쌍방향 의사소통을 강조한 인물은?", "options": ["벌로(Berlo)", "데일(Dale)", "갤브레이스", "스키너"], "answer": 0, "explanation": "벌로(Berlo)의 커뮤니케이션 모형(1960)은 교수자·학습자를 강조하고 쌍방향 의사소통을 강조했습니다."}, {"q": "한국에서 행동주의 학습이론을 도입하고 프로그램 수업 원리를 강조한 '한국행동과학연구소'가 설립된 해는?", "options": ["1951년", "1968년", "1972년", "1985년"], "answer": 1, "explanation": "한국행동과학연구소는 1968년 설립되어 행동주의 학습이론 도입과 프로그램 수업 원리를 강조했습니다."}, {"q": "한국교육개발원과 한국방송통신대학교가 함께 설립된 해는?", "options": ["1968년", "1970년", "1972년", "1984년"], "answer": 2, "explanation": "한국교육개발원과 한국방송통신대학교는 모두 1972년에 설립되었습니다."}, {"q": "한국에서 '한국교육공학회'가 설립되고 학술지 '교육공학연구'가 발간되기 시작한 해는?", "options": ["1972년", "1984년", "1985년", "2001년"], "answer": 2, "explanation": "한국교육공학회는 1985년 설립되었으며 학술지 '교육공학연구'를 발간했습니다. 교육공학과(한양대) 설립은 1984년입니다."}, {"q": "한국에서 한양대학교 사범대학에 '교육공학과'가 설립된 해는?", "options": ["1972년", "1984년", "1985년", "2001년"], "answer": 1, "explanation": "교육공학과는 1984년 한양대학교 사범대학에 설립되었습니다."}, {"q": "'학습은 경험의 결과로 나타나는 관찰 가능한 행동의 변화'로 보며 파블로프·스키너의 조건형성을 대표 이론으로 하는 학습이론은?", "options": ["행동주의", "인지주의", "구성주의", "객관주의"], "answer": 0, "explanation": "행동주의는 학습을 관찰 가능한 행동의 변화로 보며, 고전적 조건형성(파블로프)·조작적 조건형성(스키너)을 대표 이론으로 합니다."}, {"q": "행동주의가 교육공학에 미친 영향으로 보기 어려운 것은?", "options": ["구체적 행동목표의 강조", "학습내용의 세분화 및 계열화", "즉각적 피드백 강조", "사회적 상호작용과 협동학습 강조"], "answer": 3, "explanation": "사회적 상호작용·협동학습 강조는 구성주의의 영향입니다. 행동주의는 행동목표·세분화·외재적 동기·즉각적 피드백을 강조합니다."}, {"q": "'학습자가 혼자서는 할 수 없지만 유능한 타인의 도움을 받으면 할 수 있는 과제의 범위'를 가리키는 구성주의 개념은?", "options": ["근접발달영역(ZPD)", "발판(scaffolding)", "조작적 조건형성", "정보처리이론"], "answer": 0, "explanation": "근접발달영역(ZPD)은 혼자서는 못 하지만 타인의 도움을 받으면 가능한 과제 범위이며, 이 영역 안에서만 진정한 학습이 가능하다고 봅니다."}, {"q": "'학습자가 스스로 문제를 해결할 수 있는 단계에 도달하도록 제공되는 도움이나 보조'를 가리키는 개념은?", "options": ["근접발달영역", "발판(scaffolding)", "강화", "선택적 지각"], "answer": 1, "explanation": "발판(scaffolding)은 학습자가 스스로 문제를 해결할 수 있도록 제공되는 도움·보조를 의미합니다."}, {"q": "체제 이론 중 단계적·조직적 접근(투입-과정-산출-피드백)인 '체계적 접근(systematic approach)'을 강조하는 것은?", "options": ["경성체제 이론", "연성체제 이론", "개방체제 이론", "폐쇄체제 이론"], "answer": 0, "explanation": "경성체제 이론은 강하고 치밀하며 안정된 특성을 가정하고, 단계적·조직적인 체계적 접근(systematic)을 강조합니다."}, {"q": "수행공학에서 수행문제 해결의 준거 3가지에 해당하지 않는 것은?", "options": ["고객", "작업환경", "경제성", "기술력"], "answer": 3, "explanation": "수행공학의 수행문제 해결 준거 3가지는 고객·작업환경·경제성입니다. 궁극적 목적은 인간 수행의 개선입니다."}, {"q": "가장 대표적인 교수체제설계 모형으로 '각 단계의 산출이 다음 단계의 투입 요소'가 되며 8차 개정된 모형은?", "options": ["딕과 캐리(Dick & Carey) 모형", "ASSURE 모형", "ADDIE 모형", "ARCS 모형"], "answer": 0, "explanation": "딕과 캐리 모형은 가장 대표적인 교수체제설계 모형으로 1978년 이후 8차 개정되었으며, 각 단계의 산출이 다음 단계 투입이 됩니다."}, {"q": "딕과 캐리 모형에서 '수행목표 기술' 단계에 반드시 포함되어야 할 세 가지 요소는?", "options": ["행동(기능)·조건·준거", "목표·내용·평가", "분석·설계·개발", "주의·관련성·자신감"], "answer": 0, "explanation": "수행목표는 행동(기능)·조건·준거를 포함하여 수업 후 학습자가 할 수 있게 될 것을 구체적으로 기술합니다."}, {"q": "딕과 캐리 모형의 '형성 평가 실시' 단계에서 수행하는 평가 방식 순서로 옳은 것은?", "options": ["일대일 평가→소집단 평가→현장 평가", "현장 평가→소집단 평가→일대일 평가", "소집단 평가→일대일 평가→현장 평가", "총괄 평가→형성 평가→진단 평가"], "answer": 0, "explanation": "형성 평가는 일대일 평가→소집단 평가→현장 평가 순으로 진행하여 수업 전략·자료의 개선 자료를 수집합니다."}, {"q": "교수체제설계(ISD)가 포함하는 5단계(ADDIE)의 순서로 옳은 것은?", "options": ["분석→설계→개발→실행→평가", "설계→분석→개발→평가→실행", "분석→개발→설계→실행→평가", "개발→분석→설계→평가→실행"], "answer": 0, "explanation": "ISD는 분석(Analysis)→설계(Design)→개발(Development)→실행(Implementation)→평가(Evaluation)의 단계를 포함합니다."}, {"q": "로제트(Rossett)가 제시한 수행문제의 4가지 원인에 해당하지 않는 것은?", "options": ["지식과 기술의 부족", "환경의 문제", "유인체계의 부적절", "경쟁의 부재"], "answer": 3, "explanation": "로제트의 수행문제 4원인은 지식과 기술의 부족·환경의 문제·유인체계의 부적절·직원의 동기 부족입니다."}, {"q": "과제 분석 방법 중 '나눗셈처럼 사전에 반드시 알아야 할 선수 기능을 분석'하는 데 사용되며 지적 기능 분석에 적합한 것은?", "options": ["절차 분석", "위계 분석", "군집 분석", "통합 분석"], "answer": 1, "explanation": "위계 분석은 어떤 과제 수행에 사전에 반드시 알아야 할 지식·기능을 분석하는 방법으로 지적 기능에 적합합니다."}, {"q": "과제 분석 방법 중 '신체 부위 말하기처럼 논리적 관계 없이 범주로 분류'하며 언어적 정보 분석에 사용되는 것은?", "options": ["절차 분석", "위계 분석", "군집 분석", "혼합 분석"], "answer": 2, "explanation": "군집 분석은 학습요소들이 논리적 관계 없이 주요 범주로 분류되는 경우 사용하며, 언어적 정보 분석 시 활용됩니다."}, {"q": "블룸(Bloom)의 인지적 영역 교육목표 분류 6단계의 순서로 옳은 것은?", "options": ["지식→이해→적용→분석→종합→평가", "이해→지식→적용→종합→분석→평가", "지식→적용→이해→분석→평가→종합", "평가→종합→분석→적용→이해→지식"], "answer": 0, "explanation": "블룸의 인지적 영역은 지식→이해→적용→분석→종합→평가 순으로 분류됩니다."}, {"q": "가네(Gagné)의 학습 유형 분류에 해당하지 않는 것은?", "options": ["언어적 정보", "지적 기능", "인지 전략", "사회적 정보"], "answer": 3, "explanation": "가네의 학습 유형은 언어적 정보·지적 기능·인지 전략·태도·운동 기능 5가지입니다. '사회적 정보'는 없습니다."}, {"q": "메이거(Mager)의 교수목표 진술 방식(ABCD) 4요소에 해당하지 않는 것은?", "options": ["학습자(Audience)", "행동(Behavior)", "조건(Condition)", "의도(Direction)"], "answer": 3, "explanation": "메이거의 교수목표 진술 4요소는 학습자(A)·행동(B)·조건(C)·정도(Degree)입니다. '의도'는 없습니다."}, {"q": "가네(Gagné)의 9가지 교수사태의 가장 첫 번째 단계는?", "options": ["주의 획득하기", "학습목표 제시하기", "자극 자료 제시하기", "수행 평가하기"], "answer": 0, "explanation": "가네의 9가지 교수사태는 ①주의 획득하기로 시작하여 학습목표 제시→선수학습 회상→자극 자료 제시 등으로 이어집니다."}, {"q": "가네의 9가지 교수사태 중 '내적 인지과정'으로 '강화'에 해당하는 교수사태는?", "options": ["주의 획득하기", "수행 유도하기", "수행에 대한 피드백 제공하기", "파지와 전이 증진하기"], "answer": 2, "explanation": "'수행에 대한 피드백 제공하기'는 내적 인지과정 '강화'에 해당하며, 성공적 수행에 긍정적 피드백을 제공합니다."}, {"q": "가네의 9가지 교수사태 중 가장 마지막 단계는?", "options": ["수행 평가하기", "파지와 전이 증진하기", "학습안내 제공하기", "수행 유도하기"], "answer": 1, "explanation": "마지막 단계는 ⑨파지와 전이 증진하기로, 내적 인지과정 '일반화'에 해당합니다."}, {"q": "메릴(Merrill)의 내용요소제시이론에서 1차 제시형을 구성하는 두 차원은?", "options": ["일반성과 사례", "맥락과 피드백", "설명과 질문만", "선수학습과 암기법"], "answer": 0, "explanation": "메릴의 1차 제시형은 일반성(추상적 진술)과 사례(특정한 예)의 두 차원과, 설명식·질문식 제시로 구성됩니다."}, {"q": "메릴의 1차 제시형에서 'EG'가 의미하는 것은?", "options": ["설명식 일반성", "질문식 일반성", "설명식 사례", "질문식 사례"], "answer": 0, "explanation": "E=설명식(Expository), G=일반성(Generality). EG는 설명식 일반성(예: 정의를 설명해줌)입니다."}, {"q": "메릴의 2차 제시형에 추가되는 부가적 자료에 해당하지 않는 것은?", "options": ["맥락", "선수학습", "암기법", "평가도구"], "answer": 3, "explanation": "2차 제시형은 맥락·선수학습·암기법·도움·표현법·피드백을 부가합니다. '평가도구'는 포함되지 않습니다."}, {"q": "켈러(Keller)의 ARCS 이론에서 4가지 핵심 변인의 순서로 옳은 것은?", "options": ["주의-관련성-자신감-만족감", "관련성-주의-만족감-자신감", "자신감-주의-관련성-만족감", "만족감-자신감-관련성-주의"], "answer": 0, "explanation": "ARCS는 주의(Attention)-관련성(Relevance)-자신감(Confidence)-만족감(Satisfaction)으로 구성됩니다."}, {"q": "ARCS 이론 중 '관련성(Relevance)'의 하위 요소에 해당하지 않는 것은?", "options": ["친밀성", "목적 지향성", "필요나 동기의 부합성", "지각적 주의환기"], "answer": 3, "explanation": "지각적 주의환기는 '주의(Attention)'의 하위 요소입니다. 관련성의 하위 요소는 친밀성·목적 지향성·필요나 동기의 부합성입니다."}, {"q": "강의식 교수법이 적합한 상황으로 보기 어려운 것은?", "options": ["짧은 시간에 많은 내용을 다수에게 전달할 때", "새로운 단원을 소개하거나 요약할 때", "학습자의 고등정신능력을 발달시키고자 할 때", "설득력 있는 교수로 특정 태도를 고취할 때"], "answer": 2, "explanation": "강의식은 고등정신능력·정의적 특성 발달·행동적 기능 습득에는 부적절합니다. 이는 강의식의 단점입니다."}, {"q": "강의식 교수법의 학습내용 조직 구조 중 '공통 속성으로 정보를 묶어 전체 개관에 적합하나 경직된 사고를 유발'하는 구조는?", "options": ["분류체계 구조", "문제 중심 구조", "연쇄적 구조", "위계 구조"], "answer": 0, "explanation": "분류체계 구조는 공통 속성으로 정보를 묶어 전체 개관에 적합하지만 정보 간 연결을 최소화하여 경직된 사고와 지루함을 유발합니다."}, {"q": "강의식 교수법에서 '문제→가능한 해결방안→증거·추론'으로 호기심을 자극하고 사고를 촉진하는 조직 구조는?", "options": ["분류체계 구조", "문제 중심 구조", "연쇄적 구조", "군집 구조"], "answer": 1, "explanation": "문제 중심 구조는 문제 제시 후 해결방안과 증거·추론 과정을 설명하여 호기심을 자극하고 사고를 촉진합니다."}, {"q": "강의 전개 과정에서 가네의 9가지 교수사태 중 '수업의 도입활동'에 해당하지 않는 것은?", "options": ["주의 획득하기", "학습목표 제시하기", "선수학습의 회상 자극하기", "수행 평가하기"], "answer": 3, "explanation": "도입활동은 주의 획득·학습목표 제시·선수학습 회상입니다. 수행 평가하기는 '평가' 단계에 해당합니다."}, {"q": "아이디어 생성을 위한 토의 방법 중 '비판 금지·자유분방·수량 추구·결합 개선'의 4원칙을 갖는 것은?", "options": ["브레인스토밍", "브레인라이팅", "피라미드 토의", "패널 토의"], "answer": 0, "explanation": "브레인스토밍의 4원칙은 비판 금지·자유분방·수량 추구·결합 개선입니다. 발상과 평가를 철저히 분리합니다."}, {"q": "의견을 카드에 적어 제출하여 브레인스토밍보다 정련된 아이디어를 도출하는 토의 방법은?", "options": ["브레인스토밍", "브레인라이팅", "돌아가며 발표하기", "신호등 토의"], "answer": 1, "explanation": "브레인라이팅은 각자의 의견을 카드에 적어 제출하는 방식으로, 브레인스토밍보다 정련된 아이디어를 도출하고 주의집중 유지가 수월합니다."}, {"q": "'2명씩 1:1 합의 → 2:2 → 4:4'로 확장하여 전체 합의를 도출하는 토의 방식은?", "options": ["만장일치 토의", "복수선택 토의", "피라미드 토의", "대립 토의"], "answer": 2, "explanation": "피라미드 토의는 1:1→2:2→4:4로 확장하며 모든 구성원의 참여 기회를 부여하면서 전체 합의를 도출합니다."}, {"q": "의견에 대해 파랑(찬성)·노랑(중립)·빨강(반대) 표지판으로 의사를 표시하는 토의 방식은?", "options": ["대립 토의", "찬반협동 토의", "신호등 토의", "패널 토의"], "answer": 2, "explanation": "신호등 토의는 파랑(찬성)·노랑(중립)·빨강(반대) 표지판으로 의사를 표시하여 대부분 학습자의 참여를 유도합니다."}, {"q": "4~6명의 해당 분야 전문가가 청중 앞에서 정해진 주제로 토의하는 유형은?", "options": ["패널 토의", "둘 가고 둘 남기 토의", "피라미드 토의", "찬반협동 토의"], "answer": 0, "explanation": "패널 토의는 4~6명의 전문가가 청중 앞에서 토의하며, 청중의 질문과 의견 제시가 가능합니다."}, {"q": "토의식 교수법의 단점으로 보기 어려운 것은?", "options": ["능동적 참여 유도가 어려움", "많은 양의 학습내용을 다루기에 부적절", "고차적 사고능력 훈련 기회가 없음", "교수자·학습자의 많은 노력 요구"], "answer": 2, "explanation": "고차적 사고능력 훈련 기회 제공은 토의식의 '장점(인지적 측면)'입니다. 나머지는 단점입니다."}, {"q": "협동학습의 5가지 핵심 요소에 해당하지 않는 것은?", "options": ["긍정적 상호의존성", "개별책무성", "촉진적 상호작용", "경쟁적 보상"], "answer": 3, "explanation": "협동학습 5요소는 긍정적 상호의존성·개별책무성·촉진적 상호작용·사회적 기술·집단 과정입니다. '경쟁적 보상'은 없습니다."}, {"q": "협동학습 요소 중 \"우리는 한배를 타고 있다\"고 지각하며 서로 도움을 주는 관계를 의미하는 것은?", "options": ["긍정적 상호의존성", "개별책무성", "집단 과정", "사회적 기술"], "answer": 0, "explanation": "긍정적 상호의존성은 모든 구성원이 성공하도록 서로 돕는 관계로, '우리는 한배를 타고 있다'고 지각하는 것입니다."}, {"q": "협동학습의 소집단 편성과 운영에 대한 설명으로 옳은 것은?", "options": ["학습 능력에 있어서 동질적으로 구성한다", "일반적으로 2~6명이 적당하다", "소집단은 변경 없이 학기 내내 유지한다", "10명 이상이 가장 효과적이다"], "answer": 1, "explanation": "협동학습 소집단은 학습 능력은 이질적으로, 크기는 일반적으로 2~6명이 적당하며, 5~6주마다 재편성합니다."}, {"q": "조각그림 맞추기 퍼즐에서 명칭이 유래했으며 '전문가 집단 학습 → 모집단 협동학습'으로 진행되는 협동학습 모형은?", "options": ["STAD", "직소(Jigsaw)", "집단조사(GI)", "또래교수"], "answer": 1, "explanation": "직소(Jigsaw)는 조각그림 맞추기 퍼즐에서 유래했으며, 전문과제 개별 부과→전문가 집단 학습→모집단 협동학습→개별 평가로 진행됩니다."}, {"q": "협동학습 모형 중 '외적 보상이 불필요하다고 가정'하고 학습자의 자연적 호기심·표현력 향상을 강조하는 모형은?", "options": ["STAD", "직소 II", "집단조사(GI)", "또래교수"], "answer": 2, "explanation": "집단조사(GI)는 협동학습에 외적 보상이 불필요하다고 가정하며 학습자 중심 학급토론으로 진행됩니다."}, {"q": "문제중심학습(PBL)에서 학습의 출발점이 되는 문제의 가장 핵심적 특성은?", "options": ["구조화된 문제", "비구조화된 문제", "단순한 문제", "공식으로 풀 수 있는 문제"], "answer": 1, "explanation": "PBL의 문제는 비구조화된 문제로, 상황·요소가 명확히 정의되지 않고 다양한 정답이 가능합니다."}, {"q": "다음 중 '비구조화된 문제'의 특성으로 옳지 않은 것은?", "options": ["단순한 공식에 의해 해결할 수 없다", "한 가지 정답이 아니라 다양한 정답을 가질 수 있다", "문제를 규명해 가면서 점차 문제가 바뀔 수 있다", "처음부터 모든 정보가 충분히 제공된다"], "answer": 3, "explanation": "비구조화된 문제는 문제해결에 필요한 정보가 충분히 포함되지 않으며, 처음 접했을 때 복잡하고 완전히 이해되지 않을 수 있습니다."}, {"q": "PBL에서 다음 예시는 어떤 유형의 문제인가? \"가네의 아홉 가지 교수사태를 순서에 따라 설명하시오.\"", "options": ["구조화된 문제", "비구조화된 문제", "실제적 문제", "복잡한 문제"], "answer": 0, "explanation": "순서대로 설명하는 정답이 정해진 문제는 '구조화된 문제'의 예입니다. 비구조화 문제는 수업지도안을 직접 작성하는 등 다양한 답이 가능한 문제입니다."}, {"q": "PBL에서 교수자의 역할로 가장 적절한 것은?", "options": ["지식의 일방적 전달자", "문제 설계자이자 학습 촉진자·안내자·평가자", "수업 통제자", "정답 제공자"], "answer": 1, "explanation": "PBL에서 교수자는 문제를 설계하고 학습 촉진자·안내자·평가자 역할을 하며, 학습자는 해결책을 능동적으로 탐색합니다."}, {"q": "PBL의 교육적 효과로 보기 어려운 것은?", "options": ["창의력 발달", "자기주도적 학습능력 발달", "사회적 협동심 강화", "수동적 지식 암기 강화"], "answer": 3, "explanation": "PBL은 창의력·기억과 전이·흥미·자기주도적 학습능력·사회적 협동심을 발달시킵니다. 수동적 암기 강화는 아닙니다."}, {"q": "혼합학습(Blended Learning)에 대한 정의로 옳은 것은?", "options": ["온라인 학습 전략과 오프라인 학습 전략을 결합하여 학습성과를 극대화하는 전략", "오직 온라인으로만 진행되는 학습 전략", "면대면 수업만으로 구성된 전략", "교수자 없이 진행되는 자율학습"], "answer": 0, "explanation": "혼합학습은 온라인 학습 전략과 오프라인 학습 전략을 적절히 결합하여 학습성과를 극대화하는 학습 전략입니다."}, {"q": "교육용 멀티미디어 유형 중 '실제 상황과 유사한 환경을 제공하여 개념·원리·기능을 학습하게 하는' 유형은?", "options": ["개인교수형", "반복연습형", "모의실험형", "게임형"], "answer": 2, "explanation": "모의실험형은 실제 상황과 유사한 환경을 제공합니다(예: 비행 시뮬레이션). 개인교수형은 설명+연습+피드백 형태입니다."}, {"q": "혼합학습에서 온라인 토론 집단의 적절한 구성원 수로 권장되는 것은?", "options": ["적극적 참여자 6~9명(10명 구성)", "2~3명", "15~20명", "30명 이상"], "answer": 0, "explanation": "온라인 토론 집단은 적극적 참여자가 6~9명 수준이 적절하여 10명으로 구성하는 것이 권장됩니다. 프로젝트 집단은 4~6명입니다."}, {"q": "면대면 교육의 장점으로 보기 어려운 것은?", "options": ["존재감 및 실제적 관계 형성", "동시적 의사소통 용이", "학습자 이해 정도의 즉각적 파악", "시공간적 한계 극복"], "answer": 3, "explanation": "시공간적 한계 극복은 '온라인 교육'의 장점입니다. 면대면은 존재감·구속력·동시적 의사소통·즉각적 파악이 장점입니다."}, {"q": "교수매체의 '협의의 개념'에 대한 설명으로 옳은 것은?", "options": ["교수-학습에서 사용되는 공학적 기기와 시청각 자료", "인적 자원과 학습환경까지 포함하는 모든 수단", "교육과정 전체", "학습자의 인지구조"], "answer": 0, "explanation": "협의의 교수매체는 학습내용 전달을 위해 사용되는 공학적 기기(TV·컴퓨터 등)와 시청각 자료를 의미합니다. 광의는 인적 자원·환경까지 포함합니다."}, {"q": "매체 선정 시 매체 유형별로 학습목표 달성도를 분석한 '매체선정 기준표'로 유명한 학자는?", "options": ["앨런(Allen)", "클라크(Clark)", "코즈마(Kozma)", "쿨릭(Kulik)"], "answer": 0, "explanation": "앨런(Allen)은 사진·동영상·텔레비전 등 매체 유형별로 사실적 정보·시각적 확인·원리 등 학습목표별 적합도를 분석한 표를 제시했습니다."}, {"q": "교수매체의 기능 중 '특정 기술이나 기능 습득을 지원(타자기·피아노·카메라 등)'하는 기능은?", "options": ["매개적 보조", "정보 전달", "학습경험 구성", "수업 평가"], "answer": 2, "explanation": "학습경험 구성 기능은 특정 기술·기능 습득을 지원하는 기능으로, 타자기·피아노·카메라·컴퓨터 등이 해당합니다."}, {"q": "매체 연구 유형 중 '어떤 매체가 학업 성취에 더 효과적인지 비교'하는 연구의 문제점으로 지적된 것은?", "options": ["연구 결과의 비일관성과 신기성 효과 혼재", "매체 비용이 너무 높음", "학습자가 너무 능동적임", "연구 대상이 부족함"], "answer": 0, "explanation": "매체비교 연구는 결과의 비일관성, 교수방법·신기성 효과와의 혼재로 매체 효과인지 불분명하다는 문제점이 있습니다."}, {"q": "\"매체 자체는 학습에 영향을 미치지 않으며, 교수매체는 '식품 운송용 트럭'에 불과하다\"고 주장한 학자는?", "options": ["쿨릭(Kulik)", "클라크(Clark)", "코즈마(Kozma)", "앨런(Allen)"], "answer": 1, "explanation": "클라크(Clark)는 매체를 '식품 운송용 트럭'에 비유하며 매체 자체가 아니라 교수방법·내용·전략이 학습에 영향을 준다고 주장했습니다."}, {"q": "교수매체를 '사무실 건물'에 비유하며 매체의 특성이 학습에 영향을 미치는 조건을 탐색해야 한다고 본 학자는?", "options": ["쿨릭(Kulik)", "클라크(Clark)", "코즈마(Kozma)", "갤브레이스"], "answer": 2, "explanation": "코즈마(Kozma)는 매체를 '사무실 건물'에 비유하며, 매체가 학습에 영향을 미치는 조건·환경을 적극적으로 탐색할 것을 강조했습니다."}, {"q": "컴퓨터보조수업의 효과에 관한 메타분석으로 '컴퓨터 매체의 고유 속성 때문에 효과가 발생'한다고 본 학자는?", "options": ["쿨릭(Kulik) 등", "클라크(Clark)", "코즈마(Kozma)", "하이니히"], "answer": 0, "explanation": "쿨릭(Kulik) 등은 메타분석을 통해 컴퓨터보조수업이 전통적 교수보다 효과적이며 컴퓨터 매체의 고유 속성 때문이라 결론지었습니다."}, {"q": "교수매체 연구 동향 중 '결정지향적 연구'에 대한 설명으로 옳은 것은?", "options": ["일반적 현상·원리를 탐구하여 지식 축적에 기여", "현장 실천가의 실천적 문제해결을 돕는 지식·방법·처방 제공", "매체의 물리적 속성만 연구", "비용효과만 분석"], "answer": 1, "explanation": "결정지향적 연구는 현장 실천가의 실천적 문제해결을 돕는 지식·방법·처방 제공에 기여합니다. 결론지향적 연구는 일반 원리 탐구·지식 축적에 기여합니다."}, {"q": "ICT(정보통신기술)의 개념에 대한 설명으로 옳은 것은?", "options": ["정보의 수집·생산·가공·보존·전달·활용을 가능하게 하는 기술 및 방법", "오직 컴퓨터 하드웨어만을 의미", "교육과정 자체를 의미", "학습자의 인지 전략"], "answer": 0, "explanation": "ICT는 정보의 수집·생산·가공·보존·전달·활용을 가능하게 하는 기술 및 방법으로 방송·통신·컴퓨터·인터넷 등을 포함합니다."}, {"q": "이러닝을 '인터넷 자원과 디지털 테크놀로지를 활용하여 개방성·융통성·분산성을 가진 학습환경을 제공하는 학습자 중심 양방향 학습'으로 정의한 학자(2004)는?", "options": ["로젠버그", "호튼", "칸(Khan)", "박성익 외"], "answer": 2, "explanation": "칸(Khan, 2004)은 이러닝을 개방성·융통성·분산성을 가진 학습자 중심 양방향 학습으로 정의했습니다."}, {"q": "이러닝의 콘텐츠 개발 형식 표준화를 위한 기술 표준으로, '학습객체 + 메타데이터'로 구성되는 것은?", "options": ["LMS", "SCORM", "ICT", "IADL"], "answer": 1, "explanation": "SCORM은 웹기반 학습환경에서 학습내용을 표준화된 방식으로 검색·공유·활용하는 기술 표준으로, 학습객체와 메타데이터로 구성됩니다."}, {"q": "학적관리·성적관리·학습내용 관리 및 제시·학습활동의 체계적 지원을 담당하는 시스템은?", "options": ["LMS(학습 관리체제)", "SCORM", "CAI", "VOD"], "answer": 0, "explanation": "LMS(Learning Management System)는 학적·성적 관리, 학습내용 관리 및 제시, 학습활동의 체계적 지원을 담당합니다."}, {"q": "한국에서 다양한 고등교육 기회 제공을 위해 사이버 대학 9개가 처음 개교한 해는?", "options": ["1999년", "2001년", "2004년", "2017년"], "answer": 1, "explanation": "2001년에 다양한 고등교육 기회 제공을 위해 9개의 사이버 대학이 개교했습니다."}, {"q": "한국에서 EBS 수능강의를 인터넷으로 제공하고 사이버 가정학습 지원체제가 시작된 해는?", "options": ["2001년", "2004년", "2017년", "2019년"], "answer": 1, "explanation": "2004년 EBS 수능강의 인터넷 제공과 사이버 가정학습 지원체제가 시작되었으며, 2018년 이후 'e학습터'에서 통합 운영됩니다."}, {"q": "엠러닝(m-Learning)을 '교수자-학습자 간 상호작용을 가능하게 하는 원격교육의 한 형태이자 유러닝의 초기 형태'로 본 교육적·확장적 정의를 제시한 학자(2006)는?", "options": ["Wood", "임정훈", "로젠버그", "칸"], "answer": 1, "explanation": "임정훈(2006)은 엠러닝을 교수자-학습자 간 상호작용을 가능하게 하는 원격교육의 한 형태이자 유러닝의 초기 형태로 정의했습니다."}, {"q": "엠러닝(m-Learning)의 4가지 특성에 해당하지 않는 것은?", "options": ["이동성", "접근성", "확장성", "맥락성"], "answer": 3, "explanation": "엠러닝의 4가지 특성은 이동성·접근성·확장성·신속성입니다. '맥락성(학습활동 맥락성)'은 유러닝의 특성입니다."}, {"q": "유러닝(u-Learning)의 기반이 되는 '유비쿼터스 컴퓨팅'의 예로 가장 적절한 것은?", "options": ["하이패스, 학교에서의 출석 확인", "오직 데스크탑 컴퓨터", "종이 교과서", "칠판과 분필"], "answer": 0, "explanation": "유비쿼터스 컴퓨팅은 언제 어디서나 사용 가능한 컴퓨터 시스템으로, 하이패스·학원 및 학교 출석 확인 등이 예입니다."}, {"q": "유러닝(u-Learning)의 5가지 특성에 해당하지 않는 것은?", "options": ["영구적 학습자원 관리", "접근성", "즉시성", "신속성"], "answer": 3, "explanation": "유러닝의 5가지 특성은 영구적 학습자원 관리·접근성·즉시성·상호작용성·학습활동 맥락성입니다. '신속성'은 엠러닝의 특성입니다."}, {"q": "영국 Nailsea School에서 운동장을 가상 동물원으로 설정하고 GPS를 이용한 '사바나 프로젝트'가 진행된 해는?", "options": ["2006년", "2007년", "2010년", "2015년"], "answer": 1, "explanation": "영국 Nailsea School의 사바나 프로젝트(2007)는 운동장을 가상 동물원으로 설정하고 GPS를 이용해 생태 문제를 푸는 게임형 엠러닝 사례입니다."}, {"q": "학습을 '외부 자극으로부터 정보를 받아들여 머릿속에서 처리과정을 거친 뒤 인출하는 과정'으로 설명하며 정보처리이론을 대표 이론으로 하는 학습이론은?", "options": ["행동주의", "인지주의", "구성주의", "연결주의"], "answer": 1, "explanation": "인지주의는 인간 내부의 정신작용에 관심을 두며, 정보처리이론으로 학습을 설명합니다. 사고 과정·발견 및 탐구활동의 중요성을 강조합니다."}, {"q": "인지주의가 교육공학에 미친 영향으로 보기 어려운 것은?", "options": ["사고의 과정과 발견·탐구활동의 중요성 강조", "정보처리 전략의 효과적 활용 강조", "학습자료의 조직화와 정보 간 연관성 강조", "구체적 행동목표와 외재적 동기 강조"], "answer": 3, "explanation": "구체적 행동목표·외재적 동기 강조는 행동주의의 영향입니다. 인지주의는 사고 과정·정보처리 전략·자료 조직화·과정 평가를 강조합니다."}, {"q": "과제 분석 방법 중 '타이어 교체'처럼 작업이 수행되는 과정·기능에 따라 순서적으로 연결된 과제를 분석하는 방법은?", "options": ["절차 분석", "위계 분석", "군집 분석", "혼합 분석"], "answer": 0, "explanation": "절차 분석은 교수목표와 관련된 주요 요소들이 수행 과정·기능에 따라 순서적으로 연결된 경우에 사용합니다."}, {"q": "ARCS 이론 중 '자연적 결과 강조, 외적 보상 강조, 공정성 강조'를 하위 요소로 갖는 변인은?", "options": ["주의", "관련성", "자신감", "만족감"], "answer": 3, "explanation": "만족감(Satisfaction)은 노력의 결과가 기대와 일치하여 만족하는 것으로, 자연적 결과·외적 보상·공정성 강조를 하위 요소로 합니다."}, {"q": "ARCS 이론 중 '학습 필요조건 제시, 성공의 기회 제시, 개인적 통제감'을 하위 요소로 갖는 변인은?", "options": ["주의", "관련성", "자신감", "만족감"], "answer": 2, "explanation": "자신감(Confidence)은 목표 성취 가능성을 스스로 느끼는 심리 상태로, 학습 필요조건 제시·성공의 기회 제시·개인적 통제감을 하위 요소로 합니다."}, {"q": "교수매체의 교육적 기능 중 '주의 집중, 흥미 유발, 학습내용의 이해 촉진'과 관련된 기능은?", "options": ["매개적 보조 기능", "정보 전달 기능", "학습경험 구성 기능", "교수 기능"], "answer": 0, "explanation": "매개적 보조 기능은 주의 집중·흥미 유발·이해 촉진과 의사소통을 효율화하는 기능입니다."}, {"q": "교수매체의 교육적 기능 중 '학습자의 인지적 사고활동을 촉진하도록 교수자의 역할을 수행(교육용 다큐멘터리·멀티미디어)'하는 기능은?", "options": ["매개적 보조 기능", "정보 전달 기능", "학습경험 구성 기능", "교수 기능"], "answer": 3, "explanation": "교수 기능은 매체가 학습자의 인지적 사고활동을 촉진하도록 교수자의 역할을 수행하는 것으로, 교육용 다큐멘터리·멀티미디어가 해당합니다."}, {"q": "이러닝을 '지식과 수행 향상을 위한 다양한 방식들을 전달하기 위하여 인터넷 기술을 활용하는 것'으로 정의한 학자(2001)는?", "options": ["로젠버그", "호튼", "칸", "박성익 외"], "answer": 0, "explanation": "로젠버그(2001)는 이러닝을 지식과 수행 향상을 위해 인터넷 기술을 활용하는 것으로 정의했습니다. 호튼(2001)은 인터넷·디지털 기술 이용으로 정의했습니다."}, {"q": "엠러닝에 활용되는 기기 중 '개인 일정 관리·주소록·계산기 기능을 갖고 컴퓨터와 자료 호환이 가능'한 것은?", "options": ["PDA", "스마트워치", "빔프로젝터", "전자칠판"], "answer": 0, "explanation": "PDA(Personal Digital Assistant)는 개인 일정 관리·주소록·계산기 등의 응용 프로그램을 갖추고 컴퓨터와 자료 호환이 가능한 기기입니다."}, {"q": "교육 프로그램 개발 과정에서 '어떤 교육을 왜 해야 하는지에 대한 답을 찾는 활동'을 무엇이라 하는가?", "options": ["요구 분석", "교수 분석", "환경 분석", "학습자 분석"], "answer": 0, "explanation": "요구 분석은 효과적인 교육 프로그램 개발 과정에서 어떤 교육을 왜 해야 하는지에 대한 답을 찾는 활동입니다."}, {"q": "교육 프로그램 개발 과정에서 '교육의 목적을 확인하는 과정'을 무엇이라 하는가?", "options": ["맥락 분석", "교수 분석", "요구 분석", "학습자 분석"], "answer": 2, "explanation": "교육의 목적을 확인하는 과정은 요구 분석에 해당합니다. (2019 기출)"}, {"q": "로제트의 수행문제 원인 중 '일을 제대로 해도 적절한 보상이 없을 때' 발생하는 문제에 해당하는 것은?", "options": ["환경의 문제", "동기의 결여", "지식과 기술의 부족", "부적절한 유인체계"], "answer": 3, "explanation": "일을 제대로 해도 적절한 보상이 없는 것은 '부적절한 유인체계' 문제입니다. '동기의 결여'는 직원 스스로 가치를 부여하지 못하는 경우입니다."}, {"q": "로제트의 수행문제 원인 중 '직원이 자신의 일이나 결과에 대해 제대로 가치를 부여하지 못할 때' 발생하는 문제는?", "options": ["지식의 부족", "환경의 문제", "동기의 결여", "부적절한 유인체계"], "answer": 2, "explanation": "직원이 자신의 일·결과에 가치를 부여하지 못하는 것은 '동기의 결여(직원의 동기 부족)'입니다. (2018 기출)"}, {"q": "메이거와 파이프의 수행문제 분석에서 수행문제의 원인이 '지식이나 기술의 부족'일 때 적용할 수 있는 해결안으로 가장 거리가 먼 것은?", "options": ["훈련 프로그램 제공", "피드백의 제공", "업무의 변환", "수행에 대한 상과 벌 제공"], "answer": 3, "explanation": "지식·기술 부족이 원인이면 훈련·피드백·업무 변환 등으로 해결합니다. '상과 벌 제공'은 동기·유인체계 문제의 해결안에 가깝습니다. (2019 기출)"}, {"q": "메릴의 수행-내용 행렬표에서 '다양한 물질을 현미경으로 관찰하는 방법을 찾을 수 있다'는 어느 요소에 해당하는가?", "options": ["절차 × 기억하기", "절차 × 발견하기", "원리 × 기억하기", "원리 × 활용하기"], "answer": 1, "explanation": "'관찰하는 방법을 찾을 수 있다'는 절차(방법)를 새롭게 찾아내는 것이므로 '절차 × 발견하기'에 해당합니다. (2017 기출)"}, {"q": "메릴의 수행-내용 행렬표에서 '환경오염의 개념에 맞는 예를 제시할 수 있다'는 어느 요소에 해당하는가?", "options": ["개념 × 기억하기", "개념 × 발견하기", "개념 × 활용하기", "개념 × 분석하기"], "answer": 2, "explanation": "개념에 맞는 예를 제시하는 것은 개념을 적용·활용하는 것이므로 '개념 × 활용하기'입니다. (2018 기출)"}, {"q": "메릴의 수행-내용 행렬표에서 '피타고라스의 정리를 말할 수 있다'는 어느 요소에 해당하는가?", "options": ["개념 × 기억하기", "원리 × 기억하기", "절차 × 발견하기", "사실 × 기억하기"], "answer": 1, "explanation": "피타고라스의 정리(원리)를 말하는(기억하는) 것이므로 '원리 × 기억하기'입니다. (2019 기출)"}, {"q": "메릴의 내용요소제시이론에서 설명식 1차 제시형에 타당하지 않은(추가될 수 없는) 정교화 유형은?", "options": ["맥락", "선수학습", "표현법", "피드백"], "answer": 3, "explanation": "피드백은 학습자의 답변에 반응·교정하는 것으로, 설명식이 아니라 질문식 제시형에 추가되는 정교화 유형입니다. (2018 기출)"}, {"q": "메릴의 내용요소제시이론에서 질문식 1차 제시형에 타당하지 않은 정교화 유형은?", "options": ["맥락", "도움", "암기법", "피드백"], "answer": 2, "explanation": "암기법은 설명식 제시형에 추가되는 정교화 유형으로, 질문식에는 타당하지 않습니다. (2019 기출)"}, {"q": "메릴의 1차 제시형 중 '교수자가 학습자에게 사례를 제시해 주는 것'에 해당하는 것은?", "options": ["사례-설명식", "사례-질문식", "일반성-질문식", "일반성-설명식"], "answer": 0, "explanation": "교수자가 사례를 제시(설명)해 주는 것은 '사례-설명식(Eeg)'에 해당합니다. (2019 기출)"}, {"q": "가네의 9가지 교수사태 중 '학습자가 실제로 학습내용을 숙지했는지, 학습활동을 적절히 수행했는지 확인'하는 단계는?", "options": ["수행 유도하기", "학습안내 제공하기", "자극자료 제시하기", "선수학습의 회상 자극하기"], "answer": 0, "explanation": "수행 유도하기는 학습자가 학습내용을 제대로 습득했는지 적용 기회를 제공하여 확인하는 단계입니다. (2018 기출)"}, {"q": "가네의 9가지 교수사태 중 '학습자에게 학습할 내용을 본격적으로 알려주는' 단계는?", "options": ["주의 획득하기", "수행 유도하기", "학습안내 제공하기", "자극자료 제시하기"], "answer": 3, "explanation": "자극자료 제시하기는 새로운 학습내용을 본격적으로 제시하는 단계로, 자료의 핵심적 특징을 제시합니다. (2019 기출)"}, {"q": "강의의 전개 과정에서 '수업의 도입활동'에 해당하지 않는 것은?", "options": ["학습동기 유발", "사전지식의 인지(선수학습 회상)", "교수목표의 인지", "학습자 개별 활동"], "answer": 3, "explanation": "학습자 개별 활동은 '학습자 참여' 단계에 해당합니다. 도입활동은 주의 획득(동기유발)·학습목표 제시·선수학습 회상입니다. (2017 기출)"}, {"q": "강의를 전개할 때 '수업의 도입활동' 이후 진행되는 단계들을 순서대로 나열한 것은?", "options": ["학습내용 제시 → 학습자 참여 → 평가 → 추후활동", "학습내용 제시 → 학습자 참여 → 추후활동 → 평가", "학습자 참여 → 학습내용 제시 → 평가 → 추후활동", "학습자 참여 → 학습내용 제시 → 추후활동 → 평가"], "answer": 0, "explanation": "도입활동 이후는 학습내용 제시 → 학습자 참여 → 평가 → 추후활동 순으로 진행됩니다. (매년 출제)"}, {"q": "강의 학습내용 선정 준거 중 '내용이 해당 학문영역에서 얼마나 기초적이고 가치 있게 인정되는지'를 판단하는 것은?", "options": ["중요성", "타당성", "유용성", "학습 가능성"], "answer": 0, "explanation": "중요성은 학습내용이 해당 학문 영역에서 얼마나 가치 있고 중요하게 인정되는지를 판단하는 준거입니다. (2017 기출)"}, {"q": "강의 학습내용 선정 준거 중 '교수목표를 달성하는 데 얼마나 적합한지'를 판단하는 것으로 교수목표와 가장 관계 깊은 것은?", "options": ["타당성", "유용성", "중요성", "학습 가능성"], "answer": 0, "explanation": "타당성은 학습내용이 교수목표를 달성하는 데 얼마나 적합한가를 판단하는 준거로, 교수목표와 가장 관계가 깊습니다. (2018·2019 기출)"}, {"q": "강의 학습내용 조직 방식 중 '학습내용이 순차적인 단계에 따라 조직되어 연결이 이해하기 쉬우면 주의·흥미 유지에 효과적'인 구조는?", "options": ["분류체계 구조", "문제중심 구조", "연쇄적 구조", "탐구중심 구조"], "answer": 2, "explanation": "연쇄적 구조는 학습내용이 순차적 단계에 따라 조직되는 형태로, 단계 이동 시 강조와 회상 기회 제공이 유의점입니다."}, {"q": "토의식 교수법에 대한 설명으로 적절한 것은?", "options": ["강의식보다 시간과 노력이 덜 든다", "많은 양의 학습내용을 다루기에 적절하다", "교수자가 주도적으로 조절·관리하기 용이하다", "분석·종합·판단 같은 고차원적 사고능력 배양에 도움이 된다"], "answer": 3, "explanation": "토의식은 고차원적 사고능력 배양에 도움이 됩니다. 시간·노력이 많이 들고, 많은 내용을 다루기 부적절하며, 조절·관리가 어렵습니다. (매년 출제)"}, {"q": "각 개인이 대안 중 다수를 선택하고 각각에 가중치를 둔 다음, 가중치를 합산하여 최종 우선순위를 결정하는 토의 방식은?", "options": ["피라미드 토의", "찬반협동 토의", "복수선택 토의", "돌아가며 발표하기"], "answer": 2, "explanation": "복수선택 토의는 다수결의 단점을 보완하기 위해 각 개인이 다수 대안을 선택하고 가중치를 합산하여 우선순위를 결정합니다. (2018 기출)"}, {"q": "어떤 주제에 대해 찬성 팀과 반대 팀으로 나누어 논쟁하고, 이 과정을 배심원이 판결하는 방식의 토의 유형은?", "options": ["대립 토의", "패널 토의", "찬반협동 토의", "피라미드 토의"], "answer": 0, "explanation": "대립 토의는 찬성 팀과 반대 팀으로 나누어 논쟁하고 배심원이 판결하는 방식입니다. (2017 기출)"}, {"q": "구성원 모두가 찬성해야만 결론이 나며, 참여자 개개인이 거부권을 행사할 수 있는 토의 방식은?", "options": ["만장일치 토의", "복수선택 토의", "대립 토의", "신호등 토의"], "answer": 0, "explanation": "만장일치 토의는 구성원 모두 찬성해야 결론이 나고 개개인이 거부권을 행사할 수 있어, 서로 설득을 통해 의견을 모읍니다."}, {"q": "수업 상황의 세 가지 학습구조(경쟁적·개별적·협동적) 중 학습자의 학업성취와 수행 증진에 가장 효과적인 것은?", "options": ["협동적 학습구조", "경쟁적 학습구조", "개별적 학습구조", "별다른 차이 없음"], "answer": 0, "explanation": "협동적 학습구조가 모든 교과 영역과 모든 연령에서 학업 성취와 수행 증진에 가장 효과적인 것으로 밝혀졌습니다. (2019 기출)"}, {"q": "다른 학습자의 결과에 관계없이 자신에게 주어진 학습목표 달성을 위해 혼자서 학습을 수행하는 학습구조는?", "options": ["협동적 학습구조", "주도적 학습구조", "경쟁적 학습구조", "개별적 학습구조"], "answer": 3, "explanation": "개별적 학습구조는 타인의 결과와 무관하게 자신의 학습목표 달성을 위해 혼자 학습하는 구조입니다. (2017 기출)"}, {"q": "협동학습 기본 원리 중 '서로 정확하게 의사소통하고 갈등을 효과적으로 해결함으로써 집단 생산성에 큰 영향을 미치는' 요소는?", "options": ["집단 과정", "사회적 기술", "개별 책무성", "촉진적 상호작용"], "answer": 1, "explanation": "사회적 기술은 의사소통·갈등 해결 등 다른 구성원과 효과적으로 일하는 데 필요한 대인관계 기술입니다. (2018 기출)"}, {"q": "협동학습 기본 원리 중 '구성원들이 목표를 얼마나 잘 성취하고 공동목표 달성을 위해 얼마나 협력했는지에 대한 토론과 평가'와 관련된 것은?", "options": ["집단 과정", "개별책무성", "사회적 기술", "긍정적 상호작용"], "answer": 0, "explanation": "집단 과정은 구성원의 목표 성취 정도와 협력 정도에 대한 토론·평가로, 관찰자를 선정해 활동 과정을 기록하고 성찰합니다. (2019 기출)"}, {"q": "협동학습 직소(Jigsaw) 모형의 절차를 올바르게 나열한 것은?", "options": ["집단구성 → 전문과제 학습 → 모집단 협동학습 → 개별평가", "집단구성 → 전문과제 학습 → 개별평가 → 모집단 협동학습", "집단구성 → 모집단 협동학습 → 전문과제 학습 → 개별평가", "집단구성 → 개별평가 → 전문과제 학습 → 모집단 협동학습"], "answer": 0, "explanation": "직소 모형은 집단구성 → 전문(전문가)과제 학습 → 모집단 협동학습 → 개별평가 순으로 진행됩니다. (매년 출제!)"}, {"q": "교수자의 강의 후 각 소집단이 학습내용을 완벽히 이해하도록 함께 학습한 다음, 모든 학습자가 개별 퀴즈를 치르는 협동학습 유형은?", "options": ["학습동아리 모형", "팀 프로젝트 모형", "협동을 위한 협동학습", "팀성취 분담 협동학습(STAD)"], "answer": 3, "explanation": "팀성취 분담 협동학습(STAD)은 교수자 수업 → 소집단 연습학습 → 개별 퀴즈 → 개별·소집단 점수 산출로 진행되며 정답이 명확한 목표에 효과적입니다. (2018 기출)"}, {"q": "교과 영역에서 반복연습을 통해 지루하기 쉬운 단순 지식이나 기능을 학습하는 데 가장 효과적인 협동학습 유형은?", "options": ["직소 모형", "팀성취 분담 협동학습", "협동을 위한 협동학습", "플래시 카드를 이용한 완전학습"], "answer": 3, "explanation": "플래시 카드를 이용한 완전학습(또래교수)은 2인 1조로 플래시 카드 반복연습을 하며, 기본 지식·단어·역사적 사건 학습에 효과적입니다. (2017 기출)"}, {"q": "문제중심학습에서 잠정적 문제에 포함된 아이디어를 교육내용과 관련지어 시각적인 형태로 표현한 것은?", "options": ["문제지도", "스토리보드", "문제 시나리오", "문제해결 계획표"], "answer": 0, "explanation": "문제지도는 잠정적 문제에 포함된 아이디어를 교육내용과 관련지어 시각적으로 표현한 것입니다. (2017 기출)"}, {"q": "문제중심학습에서 실제로 일어날 수 있는 구체적 문제와 학습자의 역할이 명시적으로 표현되는 것은?", "options": ["문제지도", "문제상황", "문제 시나리오", "문제해결 계획표"], "answer": 2, "explanation": "문제 시나리오는 실제로 일어날 수 있는 구체적 문제 상황과 학습자의 역할을 명시적으로 표현한 것입니다. (2018 기출)"}, {"q": "문제중심학습의 문제개발 절차를 올바르게 나열한 것은?", "options": ["잠정적 문제선정 → 문제지도 작성 → 문제 시나리오 작성", "잠정적 문제선정 → 문제 시나리오 작성 → 문제지도 작성", "문제 시나리오 작성 → 잠정적 문제선정 → 문제지도 작성", "문제지도 작성 → 잠정적 문제선정 → 문제 시나리오 작성"], "answer": 0, "explanation": "문제개발 절차는 잠정적 문제선정 → 문제지도 작성 → 문제 시나리오 작성 순입니다. (2019 기출)"}, {"q": "학습자에게 제공되는 피드백 종류 중 '학습내용과 관련하여 학습자의 사고과정을 안내해 주는' 피드백은?", "options": ["정교화 피드백", "교정적 피드백", "확인적 피드백", "동기부여적 피드백"], "answer": 0, "explanation": "정교화 피드백은 학습내용과 관련해 학습자의 사고과정을 안내해 주는 피드백입니다. (2017 기출)"}, {"q": "학습자의 응답이 맞았는지 틀렸는지만을 알려주는 피드백의 종류는?", "options": ["정교화 피드백", "교정적 피드백", "확인적 피드백", "동기부여적 피드백"], "answer": 2, "explanation": "확인적 피드백은 학습자의 응답이 맞았는지 틀렸는지만을 알려주는 피드백입니다. (2018 기출)"}, {"q": "특정 정보를 보다 신속·정확하게, 그리고 대량으로 전달해 줄 수 있는 교수매체의 교육적 기능은?", "options": ["교수 기능", "정보전달 기능", "매개적 보조 기능", "학습경험 구성 기능"], "answer": 1, "explanation": "정보전달 기능은 정보를 신속·정확·대량으로 전달하고 시공간을 초월하며 정확하게 기록·보존하는 기능입니다. (2017 기출)"}, {"q": "다음 교수매체 중 '시청각 매체'에 해당하는 것은?", "options": ["모형", "실물 환등기", "슬라이드와 녹음기", "MP3 플레이어"], "answer": 2, "explanation": "슬라이드(시각)+녹음기(청각)는 시청각 매체에 해당합니다. 모형·실물은 시각, MP3는 청각 매체입니다. (2017 기출)"}, {"q": "다음 교수매체 중 '복합매체'에 해당하는 것은?", "options": ["키트자료", "실물 환등기", "교육용 영화", "슬라이드와 녹음기"], "answer": 3, "explanation": "슬라이드와 녹음기는 두 가지 이상의 매체가 결합된 복합매체입니다. (2019 기출)"}, {"q": "교수매체 연구영역 중 '학습자를 수동적 존재로 보고, 매체를 통해 학습자의 행동을 변화시키기 위해 학습과제에 가장 적합한 매체를 찾고자' 한 연구는?", "options": ["매체비교 연구", "매체속성 연구", "매체에 대한 태도 연구", "매체활용 경제성 연구"], "answer": 0, "explanation": "매체비교 연구는 학습자를 수동적으로 보고 어떤 매체가 더 효과적인지를 비교·탐색하는 연구입니다. (2017 기출)"}, {"q": "교수매체 연구영역 중 '매체가 전달하는 상징체제가 학습자의 인지적 표상·정보처리과정에 영향을 미칠 것'이라 가정하는 영역은?", "options": ["매체속성 연구", "매체비교 연구", "매체에 대한 태도 연구", "매체활용 경제성 연구"], "answer": 0, "explanation": "매체속성 연구는 매체가 전달하는 상징체제가 학습자의 인지과정·정보처리에 영향을 미칠 것이라 가정합니다. (2018 기출)"}, {"q": "교수매체 활용을 위한 ASSURE 모형의 단계 순서로 옳은 것은?", "options": ["목표진술 → 학습자분석 → 학습자 참여유도 → 매체 선정·활용", "학습자분석 → 목표진술 → 매체 선정·활용 → 학습자 참여유도", "목표진술 → 학습자분석 → 매체 선정·활용 → 학습자 참여유도", "학습자분석 → 목표진술 → 학습자 참여유도 → 매체 선정·활용"], "answer": 1, "explanation": "ASSURE 모형은 학습자분석(A) → 목표진술(S) → 매체·자료 선정(S) → 매체·자료 활용(U) → 학습자 참여유도(R) → 평가·수정(E) 순입니다. (2018 기출)"}, {"q": "ASSURE 모형에서 수업목표를 진술한 다음에 선정해야 할 것과 거리가 먼 것은?", "options": ["교수방법", "매체", "자료", "평가방법"], "answer": 3, "explanation": "목표진술 다음에는 교수방법·매체·자료를 선정합니다. 평가방법은 마지막 평가·수정(E) 단계에 해당합니다. (2019 기출)"}, {"q": "ICT 활용교육 유형 중 '컴퓨터를 학습자의 인지적 활동을 촉진·지원하기 위해 사용(개념지도·공동 문서편집기 등)'하는 것은?", "options": ["매체기반 수업", "인터넷 활용 수업", "멀티미디어 활용 수업", "응용 소프트웨어 활용 수업"], "answer": 3, "explanation": "응용 소프트웨어 활용 수업은 컴퓨터를 학습자의 인지적 활동 촉진·지원에 사용하는 것으로 개념지도 프로그램·공동 문서편집기 등이 해당합니다. (2019 기출)"}, {"q": "ICT 활용 학습활동 유형 중 '네트워크 기술을 활용해 외부 전문가의 도움을 받아 공동의 문서를 제작'하는 활동은?", "options": ["토론하기", "정보분석하기", "정보탐색하기", "협력 연구하기"], "answer": 3, "explanation": "협력 연구하기는 동료·타 지역 학습자 및 전문가와 협력하여 학습활동을 수행하는 것입니다. (2017 기출)"}, {"q": "여러 이러닝 정의에 공통적으로 포함된 개념적 속성으로 적절한 것은?", "options": ["분산학습 제공", "형식학습 강조", "교수자 중심 일방향 학습", "학교교육 맥락에서 출현"], "answer": 0, "explanation": "이러닝의 개념적 속성은 시공간 제약을 극복한 융통성 있는 학습환경, 분산성(분산학습) 제공 등입니다. (2018 기출)"}, {"q": "u-러닝의 특징 중 '일상생활 속의 문제를 학습 상황에서 자연스럽게 다룸으로써 학습자의 흥미와 몰입을 증가'시키는 것과 관련된 것은?", "options": ["즉시성", "접근성", "학습활동 맥락성", "영구적 학습자원 관리"], "answer": 2, "explanation": "학습활동 맥락성은 일상생활 속 문제를 학습 상황에서 자연스럽게 다루어 흥미와 몰입을 높이는 u-러닝의 특징입니다. (2018 기출)"}, {"q": "다음 중 m-러닝(엠러닝)의 특징으로 가장 거리가 먼 것은?", "options": ["경제성", "접근성", "확장성", "신속성"], "answer": 0, "explanation": "엠러닝의 4가지 특징은 이동성·접근성·확장성·신속성입니다. '경제성'은 포함되지 않습니다. (2019 기출)"}, {"q": "e-러닝, m-러닝, u-러닝 간의 관계에 대한 설명으로 적절하지 않은 것은?", "options": ["m-러닝은 u-러닝에 통합·발전될 가능성을 내포한다", "e·m·u러닝은 모두 원격교육의 한 형태이다", "u-러닝의 초기단계에는 내재성보다 이동성을 강조한다", "u-러닝은 모바일 기기의 등장으로 e-러닝이 발전된 개념이다"], "answer": 3, "explanation": "u-러닝은 유비쿼터스 컴퓨팅 기반 개념으로, '모바일 기기 등장으로 e-러닝이 발전된 것'은 m-러닝에 대한 설명입니다. (2017 기출)"}, {"q": "혼합학습 유형 중 '수업 전 온라인 사전학습 → 면대면 교실수업 → 이후 온라인 보충학습·평가'로 이루어지는 것은?", "options": ["면대면 교육 중심 혼합학습", "온라인 교육 중심 혼합학습", "내용기반 균등배분 혼합학습", "활동기반 균등배분 혼합학습"], "answer": 0, "explanation": "면대면 교육 중심 혼합학습은 면대면 수업 전·후에 온라인으로 사전학습(예습)과 보충학습·평가를 시행하는 유형입니다. (2018 기출)"}, {"q": "혼합학습 유형 중 '사전 면대면 오리엔테이션으로 온라인 학습의 어려움을 방지하고, 핵심내용을 면대면으로 다시 설명하거나 팀별 토론을 진행'하는 것은?", "options": ["면대면 교육 중심 혼합학습", "온라인 교육 중심 혼합학습", "활동기반 균등배분 혼합학습", "내용기반 균등배분 혼합학습"], "answer": 1, "explanation": "온라인 교육 중심 혼합학습은 면대면 오리엔테이션 + 주요 온라인 활동 + 보완적 면대면 활동으로 구성됩니다. (2019 기출)"}, {"q": "온라인 학습환경에서의 효율적 의사소통 전략으로 적절하지 않은 것은?", "options": ["교수자는 이모티콘 사용을 자제한다", "팀원들에게 관심을 표현하는 내용도 제시한다", "게시판 제목은 핵심 어구로 구성한다", "반대의견 제시 시 동의하는 부분도 함께 제시한다"], "answer": 0, "explanation": "온라인 환경에서는 친밀감 형성을 위해 적절한 이모티콘 사용 등도 권장되므로, '이모티콘 사용 자제'는 효율적 의사소통 전략으로 적절하지 않습니다. (2018 기출)"}];
+const QUIZ_SIZE = 20;
+
+// Fisher-Yates shuffle
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// 문제 선정 + 각 문제의 보기도 셔플 (정답 위치 랜덤화)
+function prepareQuiz() {
+  const picked = shuffle(ALL_QUESTIONS).slice(0, QUIZ_SIZE);
+  return picked.map(q => {
+    const optsWithIdx = q.options.map((opt, i) => ({ opt, isAnswer: i === q.answer }));
+    const shuffled = shuffle(optsWithIdx);
+    const newAnswer = shuffled.findIndex(x => x.isAnswer);
+    return {
+      q: q.q,
+      options: shuffled.map(x => x.opt),
+      answer: newAnswer,
+      explanation: q.explanation
+    };
+  });
+}
+
+let state = { quiz: [], idx: 0, answers: [], started: false };
+const main = document.getElementById('main');
+const labels = ['A', 'B', 'C', 'D', 'E'];
+
+function renderStart() {
+  document.getElementById('progressWrap').style.display = 'none';
+  document.getElementById('scoreTracker').style.display = 'none';
+  main.innerHTML = `
+    <div class="card start-screen">
+      <h2>📚 기말 대비 모드</h2>
+      <p>1~15강 요점 + 2017·2018·2019 기출 반영</p>
+      <div class="start-info">
+        <strong>📌 출제 방식</strong><br>
+        · 요점정리 + 기출 핵심 <strong>142문제</strong> 중 <strong>20문제</strong> 무작위 출제<br>
+        · 매년 빈출(직소 절차·메릴 행렬표·ARCS·매체기능 등) 포함<br>
+        · 답 선택 시 즉시 정답/해설 확인<br>
+        · 마지막에 점수와 틀린 문제 다시 보기
+      </div>
+      <div class="controls" style="max-width: 280px; margin: 0 auto;">
+        <button class="btn btn-primary" id="startBtn">시작하기</button>
+      </div>
+    </div>
+  `;
+  document.getElementById('startBtn').addEventListener('click', startQuiz);
+}
+
+function startQuiz() {
+  state.quiz = prepareQuiz();
+  state.idx = 0;
+  state.answers = [];
+  state.started = true;
+  document.getElementById('progressWrap').style.display = 'flex';
+  document.getElementById('scoreTracker').style.display = 'flex';
+  updateProgress();
+  renderQuestion();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function updateProgress() {
+  const total = state.quiz.length;
+  const done = state.answers.filter(a => a !== undefined).length;
+  document.getElementById('progressFill').style.width = `${(done/total)*100}%`;
+  document.getElementById('progressText').textContent = `${done} / ${total}`;
+  const correctNum = state.answers.filter((a, i) => a !== undefined && a === state.quiz[i].answer).length;
+  const wrongNum = state.answers.filter((a, i) => a !== undefined && a !== state.quiz[i].answer).length;
+  document.getElementById('correctCount').textContent = correctNum;
+  document.getElementById('wrongCount').textContent = wrongNum;
+}
+
+function renderQuestion() {
+  const q = state.quiz[state.idx];
+  const total = state.quiz.length;
+  const answered = state.answers[state.idx];
+  const isCorrect = answered === q.answer;
+
+  main.innerHTML = `
+    ${answered !== undefined ? `
+      <div class="feedback-banner ${isCorrect ? 'correct' : 'wrong'}">
+        ${isCorrect ? '🎉 맞았어요!' : '❌ 틀렸어요'}
+      </div>
+    ` : ''}
+    <div class="card">
+      <div class="q-num">문제 ${state.idx + 1} / ${total}</div>
+      <div class="question">${q.q}</div>
+      <div class="options">
+        ${q.options.map((opt, i) => {
+          let cls = 'option';
+          if (answered !== undefined) {
+            if (i === q.answer) cls += ' correct';
+            else if (i === answered) cls += ' wrong';
+          }
+          return `<button class="${cls}" data-idx="${i}" ${answered !== undefined ? 'disabled' : ''}>
+            <span class="option-label">${labels[i]}</span>
+            <span class="option-text">${opt}</span>
+          </button>`;
+        }).join('')}
+      </div>
+      ${answered !== undefined && q.explanation ? `
+        <div class="explanation"><strong>해설</strong>${q.explanation}</div>
+      ` : ''}
+      <div class="controls">
+        ${state.idx > 0 ? '<button class="btn btn-secondary" id="prevBtn">이전</button>' : ''}
+        ${answered !== undefined ? (
+          state.idx < total - 1
+            ? '<button class="btn btn-primary" id="nextBtn">다음 문제</button>'
+            : '<button class="btn btn-primary" id="finishBtn">결과 보기</button>'
+        ) : ''}
+      </div>
+    </div>
+  `;
+
+  main.querySelectorAll('.option:not(:disabled)').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const choice = parseInt(btn.dataset.idx);
+      state.answers[state.idx] = choice;
+      updateProgress();
+      renderQuestion();
+    });
+  });
+  document.getElementById('prevBtn')?.addEventListener('click', () => { state.idx--; renderQuestion(); window.scrollTo({top:0, behavior:'smooth'}); });
+  document.getElementById('nextBtn')?.addEventListener('click', () => { state.idx++; renderQuestion(); window.scrollTo({top:0, behavior:'smooth'}); });
+  document.getElementById('finishBtn')?.addEventListener('click', renderResult);
+}
+
+function renderResult() {
+  const total = state.quiz.length;
+  const correct = state.answers.filter((a, i) => a === state.quiz[i].answer).length;
+  const wrong = total - correct;
+  const pct = Math.round((correct/total)*100);
+  let msg = '훌륭해요! 시험 준비 잘 되셨네요';
+  if (pct < 60) msg = '핵심 포인트 다시 한번 복습해볼까요?';
+  else if (pct < 80) msg = '거의 다 왔어요! 헷갈리는 부분만 보완하세요';
+  else if (pct < 95) msg = '아주 좋아요! 디테일만 한번 더 점검해보세요';
+
+  main.innerHTML = `
+    <div class="card result">
+      <div class="result-score">${correct}<span>/${total}</span></div>
+      <div class="result-text">정답률 ${pct}% · ${msg}</div>
+      <div class="result-stats">
+        <div class="result-stat">
+          <div class="result-stat-num correct-num">${correct}</div>
+          <div class="result-stat-label">맞은 문제</div>
+        </div>
+        <div class="result-stat">
+          <div class="result-stat-num wrong-num">${wrong}</div>
+          <div class="result-stat-label">틀린 문제</div>
+        </div>
+      </div>
+      <div class="controls" style="max-width: 320px; margin: 0 auto; gap: 8px;">
+        <button class="btn btn-primary" id="retryBtn">새 문제 다시 풀기</button>
+      </div>
+      ${wrong > 0 ? `
+        <div class="review">
+          <h2>틀린 문제 다시 보기</h2>
+          ${state.quiz.map((q, i) => {
+            const ok = state.answers[i] === q.answer;
+            if (ok) return '';
+            return `<div class="review-item">
+              <div class="rq">${i+1}. ${q.q}</div>
+              <div class="ra">정답: ${labels[q.answer]}. ${q.options[q.answer]}</div>
+            </div>`;
+          }).join('')}
+        </div>
+      ` : `<div style="margin-top: 24px; color: var(--correct-strong); font-size: 14px; font-weight: 600;">🎉 전부 맞히셨어요!</div>`}
+    </div>
+  `;
+  document.getElementById('retryBtn').addEventListener('click', () => {
+    startQuiz();
+  });
+  document.getElementById('progressFill').style.width = '100%';
+  document.getElementById('progressText').textContent = `${total} / ${total}`;
+}
+
+renderStart();
+</script>
+</body>
+</html>
